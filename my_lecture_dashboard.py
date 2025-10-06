@@ -1,21 +1,17 @@
 import streamlit as st
 # --- HIDE STREAMLIT DEFAULT UI ELEMENTS ---
-hide_streamlit_style = """
-    <style>
-    /* Hide Streamlit footer */
-    footer {visibility: hidden;}
+import streamlit as st
 
-    /* Hide GitHub button and Streamlit menu */
+# Hide Streamlit default UI (menu, footer, GitHub, etc.)
+hide_github_style = """
+    <style>
     #MainMenu {visibility: hidden;}
-    .viewerBadge_container__1QSob,
-    .viewerBadge_link__1S137,
-    .viewerBadge_text__1JaDK {
-        display: none !important;
-    }
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stActionButton {display: none !important;}
     </style>
 """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
+st.markdown(hide_github_style, unsafe_allow_html=True)
 import pandas as pd
 import os
 from datetime import datetime, date
@@ -329,4 +325,5 @@ if mode == "Teacher/Admin":
 
 
    
+
 
