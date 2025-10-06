@@ -152,22 +152,31 @@ if mode == "Student":
             st.error("Please enter both Name and Matric Number.")
 
     # Gate access
-    if "attended_week" in st.session_state and st.session_state["attended_week"]:
-        week = st.session_state["attended_week"]
-        st.success(f"Access granted for {week}")
-        lecture_info = lectures_df[lectures_df["Week"] == week].iloc[0]
-        st.subheader(f"📖 {week}: {lecture_info['Topic']}")
-        if lecture_info["Brief"].strip():
-            st.write(f"**Lecture Brief:**\n{lecture_info['Brief']}")
-        else:
-            st.info("Lecture brief not yet available.")
-        # Assignments
-        if lecture_info["Assignment"].strip():
-            st.subheader("📚 Assignment")
-            st.info(f"✅ Assignment to be submitted by next class.")
-            st.markdown(f"**Assignment:** {lecture_info['Assignment']}")
-        else:
-            st.info("Assignment not released yet.")
+if "attended_week" in st.session_state and st.session_state["attended_week"]:
+    week = st.session_state["attended_week"]
+    st.success(f"Access granted for {week}")
+
+    # Select lecture info
+    lecture_info = lectures_df[lectures_df["Week"] == week].iloc[0].fillna("")
+
+    st.subheader(f"📖 {week}: {lecture_info.get('Topic', 'No topic available')}")
+
+    # --- Lecture Brief ---
+    brief = str(lecture_info.get("Brief", "")).strip()
+    if brief:
+        st.write(f"**Lecture Brief:**\n{brief}")
+    else:
+        st.info("Lecture brief not yet available.")
+
+    # --- Assignment ---
+    assignment = str(lecture_info.get("Assignment", "")).strip()
+    if assignment:
+        st.subheader("📚 Assignment")
+        st.info("✅ Assignment to be submitted by next class.")
+        st.markdown(f"**Assignment:** {assignment}")
+    else:
+        st.info("Assignment not released yet.")
+
       
 # --- PDF Download ---
             pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
@@ -331,4 +340,5 @@ if mode == "Teacher/Admin":
 
 
    
+
 
