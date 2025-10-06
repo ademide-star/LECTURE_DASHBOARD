@@ -307,16 +307,77 @@ if mode == "Teacher/Admin":
             lectures_df.to_csv(LECTURE_FILE, index=False)
             st.success(f"{lecture_to_edit} updated successfully!")
 
-        # ---- PDF Upload ----
-        st.subheader("📄 Upload Lecture PDF Module")
-        pdf = st.file_uploader("Upload Lecture Module", type=["pdf"])
-        if pdf:
-            os.makedirs(MODULES_DIR, exist_ok=True)
-            pdf_path = f"{MODULES_DIR}/{lecture_to_edit.replace(' ', '_')}.pdf"
-            with open(pdf_path, "wb") as f:
-                f.write(pdf.getbuffer())
-            st.success(f"✅ PDF uploaded for {lecture_to_edit}")
+        # ---- PDF Upload ---
 
+import streamlit as st
+import os
+
+MODULES_DIR = "uploaded_modules"
+
+st.subheader("📄 Upload Lecture PDF Module")
+pdf = st.file_uploader("Upload Lecture Module", type=["pdf"])
+
+if pdf:
+    # Ensure directory exists
+    os.makedirs(MODULES_DIR, exist_ok=True)
+
+    # Clean file name to avoid spaces
+    safe_filename = lecture_to_edit.replace(" ", "_") + ".pdf"
+    pdf_path = os.path.join(MODULES_DIR, safe_filename)
+
+    # Save the uploaded file
+    with open(pdf_path, "wb") as f:
+        f.write(pdf.getbuffer())
+
+    st.success(f"✅ PDF uploaded for {lecture_to_edit}")
+    st.info(f"Saved to `{pdf_path}`")
+
+    # Store uploaded PDFs in session state
+    if "uploaded_pdfs" not in st.session_state:
+        st.session_state["uploaded_pdfs"] = {}
+
+    st.session_state["uploaded_pdfs"][lecture_to_edit] = pdf_path
+
+# Display uploaded PDFs
+if st.session_state.get("uploaded_pdfs"):
+    st.subheader("📂 Uploaded Lecture Modules")
+    for lec, path in st.session_state["uploaded_pdfs"].items():
+        st.write(f"{lec}: {path}")
+
+MODULES_DIR = "uploaded_modules"
+
+st.subheader("📄 Upload Lecture PDF Module")
+pdf = st.file_uploader("Upload Lecture Module", type=["pdf"])
+
+if pdf:
+    # Ensure directory exists
+    os.makedirs(MODULES_DIR, exist_ok=True)
+
+    # Clean file name to avoid spaces
+    safe_filename = lecture_to_edit.replace(" ", "_") + ".pdf"
+    pdf_path = os.path.join(MODULES_DIR, safe_filename)
+
+    # Save the uploaded file
+    with open(pdf_path, "wb") as f:
+        f.write(pdf.getbuffer())
+
+    st.success(f"✅ PDF uploaded for {lecture_to_edit}")
+    st.info(f"Saved to `{pdf_path}`")
+
+    # Store uploaded PDFs in session state
+    if "uploaded_pdfs" not in st.session_state:
+        st.session_state["uploaded_pdfs"] = {}
+
+    st.session_state["uploaded_pdfs"][lecture_to_edit] = pdf_path
+
+# Display uploaded PDFs
+if st.session_state.get("uploaded_pdfs"):
+    st.subheader("📂 Uploaded Lecture Modules")
+    for lec, path in st.session_state["uploaded_pdfs"].items():
+        st.write(f"{lec}: {path}")
+
+
+        
         # ---- Attendance Records ----
         st.divider()
         st.markdown("### 🧾 Attendance Records")
@@ -335,23 +396,7 @@ if mode == "Teacher/Admin":
             st.download_button("Download Classwork CSV", cw.to_csv(index=False).encode(), "classwork_submissions.csv")
         else:
             st.info("No classwork submissions yet.")
-       
-        st.title("📘 Lecture Dashboard")
 
-        uploaded_file = st.file_uploader("📂 Upload Lecture File", type=["csv", "pdf"])
-
-        if uploaded_file is not None:
-    # Load depending on file type
-        if uploaded_file.name.endswith(".csv"):
-            lectures_df = pd.read_csv(uploaded_file)
-        else:
-            lectures_df = pd.read_excel(uploaded_file)
-
-        st.success("✅ File uploaded successfully!")
-        st.dataframe(lectures_df.head())  # Display first few rows
-
-        else:
-            st.warning("Please upload a lecture file to continue.")
         # ---- Seminar Submissions ----
             st.markdown("### 🎤 Seminar Submissions")
         if os.path.exists(SEMINAR_FILE):
@@ -368,6 +413,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
