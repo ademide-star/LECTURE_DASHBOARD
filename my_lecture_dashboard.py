@@ -366,9 +366,10 @@ if pdf:
         else:
             st.info("No seminar submissions yet.")
 
-    else:
-        if password:
-            st.error("❌ Incorrect password. Try again.")
+else:
+    if password:
+        st.error("❌ Incorrect password. Try again.")
+
 
 
 
