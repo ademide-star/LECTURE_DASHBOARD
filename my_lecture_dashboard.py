@@ -66,7 +66,7 @@ lectures_df = pd.read_csv(LECTURE_FILE)
 # ⚙️ Helper Functions
 def mark_attendance(name, matric, week):
     df = pd.read_csv(ATTENDANCE_FILE) if os.path.exists(ATTENDANCE_FILE) else pd.DataFrame(columns=["Timestamp", "Matric Number", "Name", "Week"])
-    if ((df["Matric"] == matric) & (df["Week"] == week)).any():
+    if ((df["Matric Number"] == matric) & (df["Week"] == week)).any():
         st.warning(f"Attendance already marked for {week}.")
         return True
     new_entry = {"Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Matric Number": matric, "Name": name, "Week": week}
@@ -331,3 +331,4 @@ if mode == "Teacher/Admin":
 
 
    
+
