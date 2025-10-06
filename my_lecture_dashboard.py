@@ -37,58 +37,7 @@ import streamlit as st
 LECTURE_FILE = "lectures.csv"
 ATTENDANCE_FILE = "attendance.csv"
 
-# -------------------- Initialize Lectures CSV --------------------
-if not os.path.exists(LECTURE_FILE):
-    lecture_data = {
-        "Week": [
-            "Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
-            "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"
-        ],
-        "Topic": [
-            "Chemicals of Life: Carbohydrates, lipids, proteins, nucleic acids, and biological significance.",
-            "Enzymology: Characteristics, mechanism, factors affecting activity, enzyme classification.",
-            "Nutrition, Digestion, and Absorption in plants and animals.",
-            "Biosynthesis: Photosynthesis (light & dark reactions) and Protein Synthesis (transcription & translation).",
-            "Cell Membrane Structure & Function: Lipid bilayer, membrane proteins, transport, signal transduction.",
-            "Osmoregulation, Excretion, and Transport in Animals: Kidney function, circulatory & respiratory transport.",
-            "Plant Growth Hormones and Regulation: Auxins, gibberellins, cytokinins, abscisic acid, ethylene.",
-            "Homeostasis in Animals: Nervous & endocrine coordination, temperature, blood glucose, water balance.",
-            "Plant Water Relations and Growth: Water uptake, transport, transpiration, growth regulation, stress responses."
-        ],
-        "Brief": [""] * 9,
-        "Assignment": [""] * 9,
-        "Classwork": [""] * 9
-    }
-    pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
 
-lectures_df = pd.read_csv(LECTURE_FILE)
-
-# -------------------- Lecture Info --------------------
-# Pick first lecture row (example)
-lecture_info = lectures_df.iloc[0].to_dict()
-
-# Hardcoded defaults
-hardcoded_info = {
-    "Brief": "Introduction to proteins, amino acids, and their biological roles.",
-    "Assignment": "Answer Q1-Q5 on amino acid properties; prepare a short report on protein structures.",
-    "Classwork": "Discuss protein structures in groups; submit summary."
-}
-
-# Fill empty CSV fields safely
-for key, value in hardcoded_info.items():
-    if not str(lecture_info.get(key, "")).strip():  # convert to string to avoid AttributeError
-        lecture_info[key] = value
-
-# Display lecture info safely
-st.title(f"📚 {lecture_info.get('Topic', 'Untitled Lecture')}")
-
-for key, title in [("Brief", "Lecture Brief"),
-                   ("Assignment", "Assignment Questions"),
-                   ("Classwork", "Classwork Questions")]:
-    text = str(lecture_info.get(key, ""))
-    if text.strip():
-        st.markdown(f"### {title}")
-        st.write(text)
 
 # -------------------- Attendance --------------------
 def load_or_create_attendance():
@@ -125,21 +74,6 @@ def mark_attendance(name, matric_number, week):
         st.success("🎉 Attendance marked successfully!")
 
     return df
-
-# -------------------- Attendance Form --------------------
-st.markdown("## 📝 Mark Attendance")
-
-with st.form("attendance_form"):
-    name = st.text_input("Full Name")
-    matric_number = st.text_input("Matric Number")
-    week = st.selectbox("Week", lectures_df["Week"].tolist())
-
-    submitted = st.form_submit_button("Mark Attendance")
-    if submitted:
-        if not name.strip() or not matric_number.strip():
-            st.error("Please enter both Name and Matric Number.")
-        else:
-            mark_attendance(name.strip(), matric_number.strip(), week)
 
 # -----------------------------------
 # ⚙️ Helper Functions
@@ -213,6 +147,73 @@ with st.expander("About this Portal"):
     """)
 
 # -----------------------------------
+# -------------------- Attendance Form --------------------
+st.markdown("## 📝 Mark Attendance")
+
+with st.form("attendance_form"):
+    name = st.text_input("Full Name")
+    matric_number = st.text_input("Matric Number")
+    week = st.selectbox("Week", lectures_df["Week"].tolist())
+
+    submitted = st.form_submit_button("Mark Attendance")
+    if submitted:
+        if not name.strip() or not matric_number.strip():
+            st.error("Please enter both Name and Matric Number.")
+        else:
+            mark_attendance(name.strip(), matric_number.strip(), week)
+
+# -------------------- Initialize Lectures CSV --------------------
+if not os.path.exists(LECTURE_FILE):
+    lecture_data = {
+        "Week": [
+            "Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
+            "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"
+        ],
+        "Topic": [
+            "Chemicals of Life: Carbohydrates, lipids, proteins, nucleic acids, and biological significance.",
+            "Enzymology: Characteristics, mechanism, factors affecting activity, enzyme classification.",
+            "Nutrition, Digestion, and Absorption in plants and animals.",
+            "Biosynthesis: Photosynthesis (light & dark reactions) and Protein Synthesis (transcription & translation).",
+            "Cell Membrane Structure & Function: Lipid bilayer, membrane proteins, transport, signal transduction.",
+            "Osmoregulation, Excretion, and Transport in Animals: Kidney function, circulatory & respiratory transport.",
+            "Plant Growth Hormones and Regulation: Auxins, gibberellins, cytokinins, abscisic acid, ethylene.",
+            "Homeostasis in Animals: Nervous & endocrine coordination, temperature, blood glucose, water balance.",
+            "Plant Water Relations and Growth: Water uptake, transport, transpiration, growth regulation, stress responses."
+        ],
+        "Brief": [""] * 9,
+        "Assignment": [""] * 9,
+        "Classwork": [""] * 9
+    }
+    pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
+
+lectures_df = pd.read_csv(LECTURE_FILE)
+
+# -------------------- Lecture Info --------------------
+# Pick first lecture row (example)
+lecture_info = lectures_df.iloc[0].to_dict()
+
+# Hardcoded defaults
+hardcoded_info = {
+    "Brief": "Introduction to proteins, amino acids, and their biological roles.",
+    "Assignment": "Answer Q1-Q5 on amino acid properties; prepare a short report on protein structures.",
+    "Classwork": "Discuss protein structures in groups; submit summary."
+}
+
+# Fill empty CSV fields safely
+for key, value in hardcoded_info.items():
+    if not str(lecture_info.get(key, "")).strip():  # convert to string to avoid AttributeError
+        lecture_info[key] = value
+
+# Display lecture info safely
+st.title(f"📚 {lecture_info.get('Topic', 'Untitled Lecture')}")
+
+for key, title in [("Brief", "Lecture Brief"),
+                   ("Assignment", "Assignment Questions"),
+                   ("Classwork", "Classwork Questions")]:
+    text = str(lecture_info.get(key, ""))
+    if text.strip():
+        st.markdown(f"### {title}")
+        st.write(text)
 # 👩‍🎓 STUDENT MODE
 if mode == "Student":
     st.subheader("🎓 Student Login & Attendance")
@@ -411,6 +412,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
