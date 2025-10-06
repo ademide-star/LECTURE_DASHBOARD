@@ -344,38 +344,6 @@ if st.session_state.get("uploaded_pdfs"):
     for lec, path in st.session_state["uploaded_pdfs"].items():
         st.write(f"{lec}: {path}")
 
-MODULES_DIR = "uploaded_modules"
-
-st.subheader("📄 Upload Lecture PDF Module")
-pdf = st.file_uploader("Upload Lecture Module", type=["pdf"])
-
-if pdf:
-    # Ensure directory exists
-    os.makedirs(MODULES_DIR, exist_ok=True)
-
-    # Clean file name to avoid spaces
-    safe_filename = lecture_to_edit.replace(" ", "_") + ".pdf"
-    pdf_path = os.path.join(MODULES_DIR, safe_filename)
-
-    # Save the uploaded file
-    with open(pdf_path, "wb") as f:
-        f.write(pdf.getbuffer())
-
-    st.success(f"✅ PDF uploaded for {lecture_to_edit}")
-    st.info(f"Saved to `{pdf_path}`")
-
-    # Store uploaded PDFs in session state
-    if "uploaded_pdfs" not in st.session_state:
-        st.session_state["uploaded_pdfs"] = {}
-
-    st.session_state["uploaded_pdfs"][lecture_to_edit] = pdf_path
-
-# Display uploaded PDFs
-if st.session_state.get("uploaded_pdfs"):
-    st.subheader("📂 Uploaded Lecture Modules")
-    for lec, path in st.session_state["uploaded_pdfs"].items():
-        st.write(f"{lec}: {path}")
-
 
         
         # ---- Attendance Records ----
@@ -409,17 +377,6 @@ if st.session_state.get("uploaded_pdfs"):
     else:
         if password:
             st.error("❌ Incorrect password. Try again.")
-
-
-
-   
-
-
-
-
-
-
-
 
 
 
