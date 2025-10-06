@@ -198,23 +198,6 @@ if "attended_week" in st.session_state and st.session_state["attended_week"]:
         else:
             st.info("Lecture PDF not yet uploaded.")
  
-
-st.title("📘 Lecture Dashboard")
-
-uploaded_file = st.file_uploader("📂 Upload Lecture File", type=["csv", "pdf"])
-
-if uploaded_file is not None:
-    # Load depending on file type
-    if uploaded_file.name.endswith(".csv"):
-        lectures_df = pd.read_csv(uploaded_file)
-    else:
-        lectures_df = pd.read_excel(uploaded_file)
-
-    st.success("✅ File uploaded successfully!")
-    st.dataframe(lectures_df.head())  # Display first few rows
-
-else:
-    st.warning("Please upload a lecture file to continue.")
    
         # Seminar upload (opens mid-semester, presentation in November 3rd week)
 
@@ -352,9 +335,25 @@ if mode == "Teacher/Admin":
             st.download_button("Download Classwork CSV", cw.to_csv(index=False).encode(), "classwork_submissions.csv")
         else:
             st.info("No classwork submissions yet.")
+       
+        st.title("📘 Lecture Dashboard")
 
+        uploaded_file = st.file_uploader("📂 Upload Lecture File", type=["csv", "pdf"])
+
+        if uploaded_file is not None:
+    # Load depending on file type
+        if uploaded_file.name.endswith(".csv"):
+            lectures_df = pd.read_csv(uploaded_file)
+        else:
+            lectures_df = pd.read_excel(uploaded_file)
+
+        st.success("✅ File uploaded successfully!")
+        st.dataframe(lectures_df.head())  # Display first few rows
+
+        else:
+            st.warning("Please upload a lecture file to continue.")
         # ---- Seminar Submissions ----
-        st.markdown("### 🎤 Seminar Submissions")
+            st.markdown("### 🎤 Seminar Submissions")
         if os.path.exists(SEMINAR_FILE):
             sem = pd.read_csv(SEMINAR_FILE)
             st.dataframe(sem)
@@ -369,6 +368,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
