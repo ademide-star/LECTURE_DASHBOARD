@@ -1,16 +1,4 @@
 import streamlit as st
-import pandas as pd
-import os
-from datetime import datetime, date
-import time
-# -----------------------------------
-# 🔧 File paths
-ATTENDANCE_FILE = "attendance.csv"
-LECTURE_FILE = "lectures.csv"
-CLASSWORK_FILE = "classwork_submissions.csv"
-SEMINAR_FILE = "seminar_submissions.csv"
-MODULES_DIR = "modules"
-SEMINAR_DIR = os.path.join(MODULES_DIR, "seminars")
 # --- HIDE STREAMLIT DEFAULT UI ELEMENTS ---
 hide_streamlit_style = """
     <style>
@@ -28,6 +16,18 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+import pandas as pd
+import os
+from datetime import datetime, date
+import time
+# -----------------------------------
+# 🔧 File paths
+ATTENDANCE_FILE = "attendance.csv"
+LECTURE_FILE = "lectures.csv"
+CLASSWORK_FILE = "classwork_submissions.csv"
+SEMINAR_FILE = "seminar_submissions.csv"
+MODULES_DIR = "modules"
+SEMINAR_DIR = os.path.join(MODULES_DIR, "seminars")
 
 os.makedirs(MODULES_DIR, exist_ok=True)
 os.makedirs(SEMINAR_DIR, exist_ok=True)
@@ -329,3 +329,4 @@ if mode == "Teacher/Admin":
 
 
    
+
