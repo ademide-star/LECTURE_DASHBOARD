@@ -197,6 +197,25 @@ if "attended_week" in st.session_state and st.session_state["attended_week"]:
                 st.download_button("📥 Download Lecture Module PDF", f, file_name=f"{week}_module.pdf", mime="application/pdf")
         else:
             st.info("Lecture PDF not yet uploaded.")
+ 
+
+st.title("📘 Lecture Dashboard")
+
+uploaded_file = st.file_uploader("📂 Upload Lecture File", type=["csv", "pdf"])
+
+if uploaded_file is not None:
+    # Load depending on file type
+    if uploaded_file.name.endswith(".csv"):
+        lectures_df = pd.read_csv(uploaded_file)
+    else:
+        lectures_df = pd.read_excel(uploaded_file)
+
+    st.success("✅ File uploaded successfully!")
+    st.dataframe(lectures_df.head())  # Display first few rows
+
+else:
+    st.warning("Please upload a lecture file to continue.")
+   
         # Seminar upload (opens mid-semester, presentation in November 3rd week)
         st.divider()
         st.subheader("🎤 Mid-Semester Seminar Submission")
@@ -204,7 +223,7 @@ if "attended_week" in st.session_state and st.session_state["attended_week"]:
         if today >= date(today.year, 10, 20):  # Opens around mid-November
             seminar_file = st.file_uploader("Upload Seminar PPT (after mid-semester)", type=["ppt", "pptx"])
             if seminar_file:
-                save_seminar(name, matric number, seminar_file)
+                save_seminar(name, matric, seminar_file)
             st.info("Seminar presentations will hold in the **3rd week of November**.")
         else:
             st.warning("Seminar submissions will open mid-semester (around 4th November).")
@@ -340,6 +359,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
