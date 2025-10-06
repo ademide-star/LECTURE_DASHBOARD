@@ -71,7 +71,13 @@ def mark_attendance(name, matric, week):
         st.success("🎉 Attendance marked successfully!")
 
     return df
-# -----------------------------------
+# -----------------------------------#
+for key, title in [("Brief", "Lecture Brief"), ("Assignment", "Assignment  Questions"),("Classwork", "Classwork Questions")]:
+    text = lecture_info.get(key, "")
+    if text.strip():
+        st.markdown(f"### {title}")
+        st.write(text)
+
 # 🧾 Initialize lectures CSV if missing
 if not os.path.exists(LECTURE_FILE):
     lecture_data = {
@@ -368,6 +374,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
