@@ -1,4 +1,18 @@
 import streamlit as st
+
+# Hide Streamlit style elements (GitHub, Menu, Footer)
+hide_github_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .css-1rs6os.edgvbvh3 {display: none;} /* old github button selector */
+    .stActionButton {display: none !important;}
+    </style>
+"""
+st.markdown(hide_github_style, unsafe_allow_html=True)
+
+import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime, date
@@ -354,6 +368,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
