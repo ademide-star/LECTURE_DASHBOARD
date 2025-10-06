@@ -1,48 +1,44 @@
-
 import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime, date
-import time
-# -----------------------------------
-# 🔧 File paths
+
+# -----------------------------
+# File paths
+# -----------------------------
 ATTENDANCE_FILE = "attendance.csv"
 LECTURE_FILE = "lectures.csv"
 CLASSWORK_FILE = "classwork_submissions.csv"
 SEMINAR_FILE = "seminar_submissions.csv"
 MODULES_DIR = "modules"
 SEMINAR_DIR = os.path.join(MODULES_DIR, "seminars")
+CLASSWORK_STATUS_FILE = "classwork_status.csv"
 
 os.makedirs(MODULES_DIR, exist_ok=True)
 os.makedirs(SEMINAR_DIR, exist_ok=True)
 
-# --- HIDE STREAMLIT DEFAULT UI ELEMENTS ---
-hide_streamlit_style = """
-    <style>
-    /* Hide Streamlit footer */
-    footer {visibility: hidden;}
+# -----------------------------
+# Hide default Streamlit UI
+# -----------------------------
+st.markdown("""
+<style>
+footer {visibility: hidden;}
+#MainMenu {visibility: hidden;}
+.viewerBadge_container__1QSob,
+.viewerBadge_link__1S137,
+.viewerBadge_text__1JaDK {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-    /* Hide GitHub button and Streamlit menu */
-    #MainMenu {visibility: hidden;}
-    .viewerBadge_container__1QSob,
-    .viewerBadge_link__1S137,
-    .viewerBadge_text__1JaDK {
-        display: none !important;
-    }
-    </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-
-
-# -----------------------------------
-# 🧾 Initialize lectures CSV if missing
+# -----------------------------
+# Initialize lectures CSV if missing
+# -----------------------------
 if not os.path.exists(LECTURE_FILE):
     lecture_data = {
-        "Week": [
-            "Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
-            "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"
-        ],
+        "Week": ["Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
+                 "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"],
         "Topic": [
             "Chemicals of Life: Carbohydrates, lipids, proteins, nucleic acids, and biological significance.",
             "Enzymology: Characteristics, mechanism, factors affecting activity, enzyme classification.",
@@ -54,16 +50,24 @@ if not os.path.exists(LECTURE_FILE):
             "Homeostasis in Animals: Nervous & endocrine coordination, temperature, blood glucose, water balance.",
             "Plant Water Relations and Growth: Water uptake, transport, transpiration, growth regulation, stress responses."
         ],
-        "Brief": [""] * 9,
-        "Assignment": [""] * 9,
-        "Classwork": [""] * 9
+        "Brief": [""]*9,
+        "Assignment": [""]*9,
+        "Classwork": [""]*9
     }
     pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
 
 lectures_df = pd.read_csv(LECTURE_FILE)
 
-# -----------------------------------
-# ⚙️ Helper Functions
+# -----------------------------
+# Initialize classwork status file
+# -----------------------------
+if not os.path.exists(CLASSWORK_STATUS_FILE):
+    df_status = pd.DataFrame(columns=["Week", "IsOpen", "OpenTime"])
+    df_status.to_csv(CLASSWORK_STATUS_FILE, index=False)
+
+# -----------------------------
+# Helper Functions
+# -----------------------------
 def mark_attendance(name, matric, week):
     df = pd.read_csv(ATTENDANCE_FILE) if os.path.exists(ATTENDANCE_FILE) else pd.DataFrame(columns=["Timestamp", "Matric Number", "Name", "Week"])
     if ((df["Matric Number"] == matric) & (df["Week"] == week)).any():
@@ -75,28 +79,20 @@ def mark_attendance(name, matric, week):
     st.success(f"Attendance marked for {name} ({matric}) - {week}")
     return True
 
-
 def save_classwork(name, matric, week, answers):
     df = pd.read_csv(CLASSWORK_FILE) if os.path.exists(CLASSWORK_FILE) else pd.DataFrame(columns=["Timestamp", "Matric Number", "Name", "Week", "Answers"])
     if ((df["Matric Number"] == matric) & (df["Week"] == week)).any():
         st.warning("You’ve already submitted this classwork.")
         return False
-    entry = {
-        "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "Matric Number": matric, "Name": name, "Week": week, "Answers": "; ".join(answers)
-    }
+    entry = {"Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+             "Matric Number": matric, "Name": name, "Week": week, "Answers": "; ".join(answers)}
     df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
     df.to_csv(CLASSWORK_FILE, index=False)
     st.success("✅ Classwork submitted successfully!")
     return True
 
-
 def save_seminar(name, matric, file):
-    if not os.path.exists(SEMINAR_FILE):
-        df = pd.DataFrame(columns=["Timestamp", "Matric Number", "Name", "Filename"])
-    else:
-        df = pd.read_csv(SEMINAR_FILE)
-
+    df = pd.read_csv(SEMINAR_FILE) if os.path.exists(SEMINAR_FILE) else pd.DataFrame(columns=["Timestamp", "Matric Number", "Name", "Filename"])
     if (df["Matric Number"] == matric).any():
         st.warning("You’ve already submitted your seminar.")
         return False
@@ -111,15 +107,67 @@ def save_seminar(name, matric, file):
     df.to_csv(SEMINAR_FILE, index=False)
     st.success("✅ Seminar submitted successfully!")
     return True
-def check_attendance(matric, week):
-    df = pd.read_csv(ATTENDANCE_FILE)
-    return ((df["Matric Number"] == matric) & (df["Week"] == week)).any()
 
-# -----------------------------------
-# 🎓 Streamlit Layout
+# -----------------------------
+# Classwork status helpers
+# -----------------------------
+def is_classwork_open(week):
+    if not os.path.exists(CLASSWORK_STATUS_FILE):
+        return False
+    df = pd.read_csv(CLASSWORK_STATUS_FILE)
+    if week not in df["Week"].values:
+        return False
+    row = df[df["Week"] == week].iloc[0]
+    return row["IsOpen"] == 1
+
+def open_classwork(week):
+    now = datetime.now()
+    df = pd.read_csv(CLASSWORK_STATUS_FILE) if os.path.exists(CLASSWORK_STATUS_FILE) else pd.DataFrame(columns=["Week","IsOpen","OpenTime"])
+    if week in df["Week"].values:
+        df.loc[df["Week"]==week, ["IsOpen","OpenTime"]] = [1, now]
+    else:
+        df = pd.concat([df, pd.DataFrame([{"Week":week,"IsOpen":1,"OpenTime":now}])], ignore_index=True)
+    df.to_csv(CLASSWORK_STATUS_FILE, index=False)
+
+def close_classwork_after_20min():
+    if not os.path.exists(CLASSWORK_STATUS_FILE):
+        return
+    df = pd.read_csv(CLASSWORK_STATUS_FILE)
+    now = datetime.now()
+    for idx, row in df.iterrows():
+        if row["IsOpen"]==1 and pd.notnull(row["OpenTime"]):
+            open_time = pd.to_datetime(row["OpenTime"])
+            if (now - open_time).total_seconds() > 20*60:
+                df.at[idx,"IsOpen"]=0
+                df.at[idx,"OpenTime"]=None
+    df.to_csv(CLASSWORK_STATUS_FILE,index=False)
+
+# -----------------------------
+# PDF and seminar helpers
+# -----------------------------
+def display_module_pdf(week):
+    pdf_path = f"{MODULES_DIR}/{week.replace(' ','_')}.pdf"
+    if os.path.exists(pdf_path):
+        with open(pdf_path,"rb") as f:
+            st.download_button(label=f"📥 Download {week} Module PDF", data=f, file_name=f"{week}_module.pdf", mime="application/pdf")
+    else:
+        st.info("Lecture PDF module not yet uploaded.")
+
+def display_seminar_upload(name, matric):
+    today = date.today()
+    if today >= date(today.year,10,20):
+        seminar_file = st.file_uploader("Upload Seminar PPT", type=["ppt","pptx"])
+        if seminar_file:
+            save_seminar(name, matric, seminar_file)
+        st.info("Seminar presentations will hold in the **3rd week of November**.")
+    else:
+        st.warning("Seminar submissions will open mid-semester.")
+
+# -----------------------------
+# Streamlit Layout
+# -----------------------------
 st.set_page_config(page_title="BIO 203 Portal", page_icon="🧬", layout="wide")
 st.title("📘 BIO 203: General Physiology Course Portal")
-# --- APP HEADER ---
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
@@ -130,189 +178,103 @@ with st.expander("About this Portal"):
     - 📚 Access lecture briefs and modules.
     - 🧪 Participate in weekly classwork and assignments.
     - 💬 Submit your seminar slides after mid-semester.
-    - 🧠 Tests and interactive activities will be enabled as scheduled.
     """)
 
-# -----------------------------------
-# 👩‍🎓 STUDENT MODE
-if mode == "Student":
+# -----------------------------
+# STUDENT MODE
+# -----------------------------
+if mode=="Student":
     st.subheader("🎓 Student Login & Attendance")
     with st.form("attendance_form"):
         name = st.text_input("Full Name")
         matric = st.text_input("Matric Number")
         week = st.selectbox("Select Lecture Week", lectures_df["Week"].tolist())
         mark = st.form_submit_button("Mark Attendance")
+    
+    if mark and name.strip() and matric.strip():
+        marked = mark_attendance(name, matric, week)
+        st.session_state["attended_week"] = week if marked else None
 
-    if mark:
-        if name.strip() and matric.strip():
-            marked = mark_attendance(name, matric, week)
-            
-            st.session_state["attended_week"] = week if marked else None
+    if "attended_week" in st.session_state:
+        week = st.session_state["attended_week"]
+        st.success(f"Access granted for {week}")
+        lecture_info = lectures_df[lectures_df["Week"]==week].iloc[0]
+        st.subheader(f"📖 {week}: {lecture_info['Topic']}")
+        if lecture_info["Brief"].strip(): st.write(f"**Lecture Brief:** {lecture_info['Brief']}")
+        else: st.info("Lecture brief not yet available.")
+
+        if lecture_info["Assignment"].strip():
+            st.subheader("📚 Assignment")
+            st.markdown(f"**Assignment:** {lecture_info['Assignment']}")
         else:
-            st.error("Please enter both Name and Matric Number.")
+            st.info("Assignment not released yet.")
 
-    # Gate access
-if "attended_week" in st.session_state and st.session_state["attended_week"]:
-    week = st.session_state["attended_week"]
-    st.success(f"Access granted for {week}")
+        display_module_pdf(week)
 
-    # Select lecture info
-    lecture_info = lectures_df[lectures_df["Week"] == week].iloc[0].fillna("")
+        # Classwork
+        if lecture_info["Classwork"].strip():
+            st.markdown("### 🧩 Classwork Questions")
+            questions = [q.strip() for q in lecture_info["Classwork"].split(";") if q.strip()]
+            with st.form("cw_form"):
+                answers = [st.text_input(f"Q{i+1}: {q}") for i,q in enumerate(questions)]
+                submit_cw = st.form_submit_button("Submit Answers", disabled=not is_classwork_open(week))
+                if submit_cw: save_classwork(name, matric, week, answers)
+        else: st.info("Classwork not yet released.")
 
-    st.subheader(f"📖 {week}: {lecture_info.get('Topic', 'No topic available')}")
+        # Seminar upload
+        st.divider()
+        st.subheader("🎤 Mid-Semester Seminar Submission")
+        display_seminar_upload(name, matric)
 
-    # --- Lecture Brief ---
-    brief = str(lecture_info.get("Brief", "")).strip()
-    if brief:
-        st.write(f"**Lecture Brief:**\n{brief}")
-    else:
-        st.info("Lecture brief not yet available.")
-
-    # --- Assignment ---
-    assignment = str(lecture_info.get("Assignment", "")).strip()
-    if assignment:
-        st.subheader("📚 Assignment")
-        st.info("✅ Assignment to be submitted by next class.")
-        st.markdown(f"**Assignment:** {assignment}")
-    else:
-        st.info("Assignment not released yet.")
-
-      
-# --- PDF Download ---
-        pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
-        if os.path.exists(pdf_path):
-            with open(pdf_path, "rb") as f:
-                st.download_button(
-                    label=f"Download {week} Module PDF",
-                    data=f,
-                    file_name=f"{week}_module.pdf",
-                    mime="application/pdf"
-                        )
-        else:
-            st.info("Lecture PDF module not yet uploaded by the instructor.")
-# PDF Module
-        pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
-        if os.path.exists(pdf_path):
-            with open(pdf_path, "rb") as f:
-                st.download_button("📥 Download Lecture Module PDF", f, file_name=f"{week}_module.pdf", mime="application/pdf")
-        else:
-            st.info("Lecture PDF not yet uploaded.")
- 
-   
-        # Seminar upload (opens mid-semester, presentation in November 3rd week)
-
-st.divider()
-st.subheader("🎤 Mid-Semester Seminar Submission")
-
-today = date.today()
-# Opens around mid-October/November
-if today >= date(today.year, 10, 20):
-    seminar_file = st.file_uploader(
-        "Upload Seminar PPT (after mid-semester)", type=["ppt", "pptx"]
-    )
-    if seminar_file:
-        save_seminar(name, matric, seminar_file)
-        st.success("✅ Seminar uploaded successfully!")
-    st.info("Seminar presentations will hold in the **3rd week of November**.")
-else:
-    st.warning(
-        "Seminar submissions will open mid-semester (around 20th October)."
-    )
-# -----------------------------------
- # PDF download
-if "attended_week" in st.session_state and st.session_state["attended_week"]:
-    week = st.session_state["attended_week"]
-else:
-    week = "default_week"  # or handle as warning / skip
-
-pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
-if os.path.exists(pdf_path):
-    with open(pdf_path, "rb") as f:
-        st.download_button(
-        label=f"Download {week} Module PDF",
-        data=f,
-        file_name=f"{week}_module.pdf",
-        mime="application/pdf"
-                            )
-else:
-    st.info("Lecture PDF module not yet uploaded by the instructor.")
-                  
-
-
-        
-# ===============================================================
-# 👩‍🏫 TEACHER / ADMIN MODE
-# ===============================================================
-if mode == "Teacher/Admin":
+# -----------------------------
+# TEACHER/ADMIN MODE
+# -----------------------------
+if mode=="Teacher/Admin":
     st.subheader("🔐 Teacher/Admin Panel")
     password = st.text_input("Enter Admin Password", type="password")
-
     ADMIN_PASS = "bimpe2025class"
-    if password == ADMIN_PASS:
-        st.success("✅ Logged in as Admin")
 
+    if password==ADMIN_PASS:
+        st.success("✅ Logged in as Admin")
         # ---- Edit Lecture ----
         lecture_to_edit = st.selectbox("Select Lecture", lectures_df["Week"].tolist())
-        row_idx = lectures_df[lectures_df["Week"] == lecture_to_edit].index[0]
-
-        brief = st.text_area("Lecture Brief", value=lectures_df.at[row_idx, "Brief"])
-        assignment = st.text_area("Assignment", value=lectures_df.at[row_idx, "Assignment"])
-        classwork = st.text_area("Classwork (Separate questions with ;)", value=lectures_df.at[row_idx, "Classwork"])
-
+        row_idx = lectures_df[lectures_df["Week"]==lecture_to_edit].index[0]
+        brief = st.text_area("Lecture Brief", value=lectures_df.at[row_idx,"Brief"])
+        assignment = st.text_area("Assignment", value=lectures_df.at[row_idx,"Assignment"])
+        classwork = st.text_area("Classwork (Separate questions with ;)", value=lectures_df.at[row_idx,"Classwork"])
         if st.button("💾 Update Lecture"):
-            lectures_df.at[row_idx, "Brief"] = brief
-            lectures_df.at[row_idx, "Assignment"] = assignment
-            lectures_df.at[row_idx, "Classwork"] = classwork
-            lectures_df.to_csv(LECTURE_FILE, index=False)
+            lectures_df.at[row_idx,"Brief"]=brief
+            lectures_df.at[row_idx,"Assignment"]=assignment
+            lectures_df.at[row_idx,"Classwork"]=classwork
+            lectures_df.to_csv(LECTURE_FILE,index=False)
             st.success(f"{lecture_to_edit} updated successfully!")
 
         # ---- PDF Upload ----
         st.subheader("📄 Upload Lecture PDF Module")
         pdf = st.file_uploader("Upload Lecture Module", type=["pdf"])
         if pdf:
-            os.makedirs(MODULES_DIR, exist_ok=True)
-            pdf_path = f"{MODULES_DIR}/{lecture_to_edit.replace(' ', '_')}.pdf"
-            with open(pdf_path, "wb") as f:
-                f.write(pdf.getbuffer())
+            pdf_path = f"{MODULES_DIR}/{lecture_to_edit.replace(' ','_')}.pdf"
+            with open(pdf_path,"wb") as f: f.write(pdf.getbuffer())
             st.success(f"✅ PDF uploaded for {lecture_to_edit}")
 
-        # ---- Attendance Records ----
-        st.divider()
-        st.markdown("### 🧾 Attendance Records")
-        if os.path.exists(ATTENDANCE_FILE):
-            att = pd.read_csv(ATTENDANCE_FILE)
-            st.dataframe(att)
-            st.download_button("Download Attendance CSV", att.to_csv(index=False).encode(), "attendance.csv")
-        else:
-            st.info("No attendance records yet.")
+        # ---- Classwork Control ----
+        st.subheader("📚 Classwork Control")
+        week_to_control = st.selectbox("Select Week to Open/Close Classwork", lectures_df["Week"].tolist())
+        if st.button(f"Open Classwork for {week_to_control} (20 mins)"):
+            open_classwork(week_to_control)
+            st.success(f"Classwork for {week_to_control} is now open for 20 minutes.")
+        close_classwork_after_20min()
 
-        # ---- Classwork Submissions ----
-        st.markdown("### 🧠 Classwork Submissions")
-        if os.path.exists(CLASSWORK_FILE):
-            cw = pd.read_csv(CLASSWORK_FILE)
-            st.dataframe(cw)
-            st.download_button("Download Classwork CSV", cw.to_csv(index=False).encode(), "classwork_submissions.csv")
-        else:
-            st.info("No classwork submissions yet.")
-
-        # ---- Seminar Submissions ----
-        st.markdown("### 🎤 Seminar Submissions")
-        if os.path.exists(SEMINAR_FILE):
-            sem = pd.read_csv(SEMINAR_FILE)
-            st.dataframe(sem)
-            st.download_button("Download Seminar CSV", sem.to_csv(index=False).encode(), "seminar_submissions.csv")
-        else:
-            st.info("No seminar submissions yet.")
-
+        # ---- Records ----
+        for file,label in [(ATTENDANCE_FILE,"Attendance Records"),
+                           (CLASSWORK_FILE,"Classwork Submissions"),
+                           (SEMINAR_FILE,"Seminar Submissions")]:
+            st.divider()
+            st.markdown(f"### {label}")
+            if os.path.exists(file):
+                df = pd.read_csv(file)
+                st.dataframe(df)
+                st.download_button(f"Download {label} CSV", df.to_csv(index=False).encode(), file)
+            else: st.info(f"No {label.lower()} yet.")
     else:
-        if password:
-            st.error("❌ Incorrect password. Try again.")
-
-
-
-
-
-
-
-
-
+        if password: st.error("❌ Incorrect password. Try again.")
