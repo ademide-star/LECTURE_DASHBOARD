@@ -23,7 +23,7 @@ ATTENDANCE_FILE = "attendance.csv"
 def load_or_create_attendance():
     # ✅ If the CSV doesn't exist, create it with proper headers
     if not os.path.exists(ATTENDANCE_FILE):
-        df = pd.DataFrame(columns=["Name", "Matric", "Week", "Timestamp"])
+        df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
         df.to_csv(ATTENDANCE_FILE, index=False)
     else:
         df = pd.read_csv(ATTENDANCE_FILE)
@@ -34,7 +34,7 @@ def mark_attendance(name, matric, week):
     df = load_or_create_attendance()
 
     # ✅ Handle missing columns safely
-    required_columns = ["Name", "Matric", "Week", "Timestamp"]
+    required_columns = ["Name", "Matric Number", "Week", "Timestamp"]
     for col in required_columns:
         if col not in df.columns:
             st.warning(f"Column '{col}' missing, recreating attendance file.")
@@ -43,12 +43,12 @@ def mark_attendance(name, matric, week):
             break
 
     # ✅ Check if already marked
-    if ((df["Matric"] == matric) & (df["Week"] == week)).any():
+    if ((df["Matric Number"] == matric) & (df["Week"] == week)).any():
         st.info("✅ Attendance already marked for this student this week.")
     else:
         new_row = pd.DataFrame([{
             "Name": name,
-            "Matric": matric,
+            "Matric Number": matric,
             "Week": week,
             "Timestamp": pd.Timestamp.now()
         }])
@@ -354,6 +354,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
