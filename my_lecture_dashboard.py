@@ -11,6 +11,23 @@ CLASSWORK_FILE = "classwork_submissions.csv"
 SEMINAR_FILE = "seminar_submissions.csv"
 MODULES_DIR = "modules"
 SEMINAR_DIR = os.path.join(MODULES_DIR, "seminars")
+# --- HIDE STREAMLIT DEFAULT UI ELEMENTS ---
+hide_streamlit_style = """
+    <style>
+    /* Hide Streamlit footer */
+    footer {visibility: hidden;}
+
+    /* Hide GitHub button and Streamlit menu */
+    #MainMenu {visibility: hidden;}
+    .viewerBadge_container__1QSob,
+    .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK {
+        display: none !important;
+    }
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 os.makedirs(MODULES_DIR, exist_ok=True)
 os.makedirs(SEMINAR_DIR, exist_ok=True)
@@ -247,7 +264,7 @@ if mode == "Teacher/Admin":
     st.subheader("🔐 Teacher/Admin Panel")
     password = st.text_input("Enter Admin Password", type="password")
 
-    ADMIN_PASS = st.secrets.get("ADMIN_PASS", "admin123")
+    ADMIN_PASS = "bimpe2025class"
     if password == ADMIN_PASS:
         st.success("✅ Logged in as Admin")
 
@@ -307,6 +324,7 @@ if mode == "Teacher/Admin":
     else:
         if password:
             st.error("❌ Incorrect password. Try again.")
+
 
 
 
