@@ -1,16 +1,3 @@
-import streamlit as st
-
-# Hide Streamlit style elements (GitHub, Menu, Footer)
-hide_github_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .css-1rs6os.edgvbvh3 {display: none;} /* old github button selector */
-    .stActionButton {display: none !important;}
-    </style>
-"""
-st.markdown(hide_github_style, unsafe_allow_html=True)
 
 import streamlit as st
 import pandas as pd
@@ -79,10 +66,10 @@ lectures_df = pd.read_csv(LECTURE_FILE)
 # ⚙️ Helper Functions
 def mark_attendance(name, matric, week):
     df = pd.read_csv(ATTENDANCE_FILE) if os.path.exists(ATTENDANCE_FILE) else pd.DataFrame(columns=["Timestamp", "Matric Number", "Name", "Week"])
-    if ((df["Matric Number"] == matric number) & (df["Week"] == week)).any():
+    if ((df["Matric"] == matric) & (df["Week"] == week)).any():
         st.warning(f"Attendance already marked for {week}.")
         return True
-    new_entry = {"Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Matric Number": matric number, "Name": name, "Week": week}
+    new_entry = {"Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Matric Number": matric, "Name": name, "Week": week}
     df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
     df.to_csv(ATTENDANCE_FILE, index=False)
     st.success(f"Attendance marked for {name} ({matric}) - {week}")
@@ -96,7 +83,7 @@ def save_classwork(name, matric, week, answers):
         return False
     entry = {
         "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "Matric Number": matric number, "Name": name, "Week": week, "Answers": "; ".join(answers)
+        "Matric Number": matric, "Name": name, "Week": week, "Answers": "; ".join(answers)
     }
     df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
     df.to_csv(CLASSWORK_FILE, index=False)
@@ -110,10 +97,10 @@ def save_seminar(name, matric, file):
     else:
         df = pd.read_csv(SEMINAR_FILE)
 
-    if (df["Matric Number"] == matric number).any():
+    if (df["Matric Number"] == matric).any():
         st.warning("You’ve already submitted your seminar.")
         return False
-    filename = f"{matric number}_{file.name}"
+    filename = f"{matric}_{file.name}"
     path = os.path.join(SEMINAR_DIR, filename)
     with open(path, "wb") as f:
         f.write(file.getbuffer())
@@ -124,9 +111,9 @@ def save_seminar(name, matric, file):
     df.to_csv(SEMINAR_FILE, index=False)
     st.success("✅ Seminar submitted successfully!")
     return True
-def check_attendance(matric number, week):
+def check_attendance(matric, week):
     df = pd.read_csv(ATTENDANCE_FILE)
-    return ((df["Matric Number"] == matric number) & (df["Week"] == week)).any()
+    return ((df["Matric Number"] == matric) & (df["Week"] == week)).any()
 
 # -----------------------------------
 # 🎓 Streamlit Layout
@@ -152,13 +139,13 @@ if mode == "Student":
     st.subheader("🎓 Student Login & Attendance")
     with st.form("attendance_form"):
         name = st.text_input("Full Name")
-        matric number = st.text_input("Matric Number")
+        matric = st.text_input("Matric Number")
         week = st.selectbox("Select Lecture Week", lectures_df["Week"].tolist())
         mark = st.form_submit_button("Mark Attendance")
 
     if mark:
-        if name.strip() and matric_number.strip():
-            marked = mark_attendance(name, matric number, week)
+        if name.strip() and matric.strip():
+            marked = mark_attendance(name, matric, week)
             
             st.session_state["attended_week"] = week if marked else None
         else:
@@ -208,7 +195,7 @@ if mode == "Student":
         if today >= date(today.year, 10, 20):  # Opens around mid-November
             seminar_file = st.file_uploader("Upload Seminar PPT (after mid-semester)", type=["ppt", "pptx"])
             if seminar_file:
-                save_seminar(name, matric number, seminar_file)
+                save_seminar(name, matric, seminar_file)
             st.info("Seminar presentations will hold in the **3rd week of November**.")
         else:
             st.warning("Seminar submissions will open mid-semester (around 4th November).")
@@ -267,7 +254,7 @@ else:
             submit_cw = st.form_submit_button("Submit Answers")
 
             if submit_cw:
-                save_classwork(name, matric number, week, answers)
+                save_classwork(name, matric, week, answers)
                 st.success("✅ Classwork submitted successfully!")
     else:
         st.info("Classwork not yet released.")
@@ -344,4 +331,3 @@ if mode == "Teacher/Admin":
 
 
    
-
