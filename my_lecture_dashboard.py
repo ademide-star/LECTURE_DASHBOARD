@@ -309,46 +309,25 @@ if mode == "Teacher/Admin":
             lectures_df.to_csv(LECTURE_FILE, index=False)
             st.success(f"{lecture_to_edit} updated successfully!")
 
-        # ---- PDF Upload ---
-
-import streamlit as st
-import os
-
-MODULES_DIR = "uploaded_modules"
-
-st.subheader("📄 Upload Lecture PDF Module")
-pdf = st.file_uploader("Upload Lecture Module", type=["pdf"])
-
-if pdf:
-    # Ensure directory exists
-    os.makedirs(MODULES_DIR, exist_ok=True)
-
-    # Clean file name to avoid spaces
-    safe_filename = lecture_to_edit.replace(" ", "_") + ".pdf"
-    pdf_path = os.path.join(MODULES_DIR, safe_filename)
-
-    # Save the uploaded file
-    with open(pdf_path, "wb") as f:
-        f.write(pdf.getbuffer())
-
-    st.success(f"✅ PDF uploaded for {lecture_to_edit}")
-    st.info(f"Saved to `{pdf_path}`")
-
-    # Store uploaded PDFs in session state
-    if "uploaded_pdfs" not in st.session_state:
-        st.session_state["uploaded_pdfs"] = {}
-
-    st.session_state["uploaded_pdfs"][lecture_to_edit] = pdf_path
+        # ---- PDF Upload ----
+        st.subheader("📄 Upload Lecture PDF Module")
+        pdf = st.file_uploader("Upload Lecture Module", type=["pdf"])
+        if pdf:
+            os.makedirs(MODULES_DIR, exist_ok=True)
+            pdf_path = f"{MODULES_DIR}/{lecture_to_edit.replace(' ', '_')}.pdf"
+            with open(pdf_path, "wb") as f:
+                f.write(pdf.getbuffer())
+            st.success(f"✅ PDF uploaded for {lecture_to_edit}")
 
         # ---- Attendance Records ----
-    st.divider()
-    st.markdown("### 🧾 Attendance Records")
-    if os.path.exists(ATTENDANCE_FILE):
-        att = pd.read_csv(ATTENDANCE_FILE)
-        st.dataframe(att)
-        st.download_button("Download Attendance CSV", att.to_csv(index=False).encode(), "attendance.csv")
-    else:
-        st.info("No attendance records yet.")
+        st.divider()
+        st.markdown("### 🧾 Attendance Records")
+        if os.path.exists(ATTENDANCE_FILE):
+            att = pd.read_csv(ATTENDANCE_FILE)
+            st.dataframe(att)
+            st.download_button("Download Attendance CSV", att.to_csv(index=False).encode(), "attendance.csv")
+        else:
+            st.info("No attendance records yet.")
 
         # ---- Classwork Submissions ----
         st.markdown("### 🧠 Classwork Submissions")
@@ -360,7 +339,7 @@ if pdf:
             st.info("No classwork submissions yet.")
 
         # ---- Seminar Submissions ----
-            st.markdown("### 🎤 Seminar Submissions")
+        st.markdown("### 🎤 Seminar Submissions")
         if os.path.exists(SEMINAR_FILE):
             sem = pd.read_csv(SEMINAR_FILE)
             st.dataframe(sem)
@@ -368,9 +347,10 @@ if pdf:
         else:
             st.info("No seminar submissions yet.")
 
-else:
-    if password:
-        st.error("❌ Incorrect password. Try again.")
+    else:
+        if password:
+            st.error("❌ Incorrect password. Try again.")
+
 
 
 
