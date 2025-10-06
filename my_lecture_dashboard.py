@@ -240,18 +240,18 @@ else:
 
 # -----------------------------------
  # PDF download
-            pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
-            if os.path.exists(pdf_path):
-                with open(pdf_path, "rb") as f:
-                    st.download_button(
-                        label=f"Download {week} Module PDF",
-                        data=f,
-                        file_name=f"{week}_module.pdf",
-                        mime="application/pdf"
+pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
+if os.path.exists(pdf_path):
+    with open(pdf_path, "rb") as f:
+        st.download_button(
+        label=f"Download {week} Module PDF",
+        data=f,
+        file_name=f"{week}_module.pdf",
+        mime="application/pdf"
                             )
-            else:
-                st.info("Lecture PDF module not yet uploaded by the instructor.")
-        
+else:
+    st.info("Lecture PDF module not yet uploaded by the instructor.")
+                  
 
 # Example timing configuration
 TOTAL_DURATION = 60 * 60           # 1 hour lecture
@@ -369,6 +369,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
