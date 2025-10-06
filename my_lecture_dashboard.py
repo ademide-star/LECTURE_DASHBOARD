@@ -179,17 +179,17 @@ if "attended_week" in st.session_state and st.session_state["attended_week"]:
 
       
 # --- PDF Download ---
-            pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
-            if os.path.exists(pdf_path):
-                with open(pdf_path, "rb") as f:
-                    st.download_button(
-                        label=f"Download {week} Module PDF",
-                        data=f,
-                        file_name=f"{week}_module.pdf",
-                        mime="application/pdf"
+        pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
+        if os.path.exists(pdf_path):
+            with open(pdf_path, "rb") as f:
+                st.download_button(
+                    label=f"Download {week} Module PDF",
+                    data=f,
+                    file_name=f"{week}_module.pdf",
+                    mime="application/pdf"
                         )
-            else:
-                    st.info("Lecture PDF module not yet uploaded by the instructor.")
+        else:
+            st.info("Lecture PDF module not yet uploaded by the instructor.")
 # PDF Module
         pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
         if os.path.exists(pdf_path):
@@ -340,5 +340,6 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
