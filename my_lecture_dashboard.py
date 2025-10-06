@@ -40,41 +40,6 @@ ATTENDANCE_FILE = "attendance.csv"
 
 
 # -------------------- Attendance --------------------
-def load_or_create_attendance():
-    if not os.path.exists(ATTENDANCE_FILE):
-        df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
-        df.to_csv(ATTENDANCE_FILE, index=False)
-    else:
-        df = pd.read_csv(ATTENDANCE_FILE)
-    return df
-
-def mark_attendance(name, matric_number, week):
-    df = load_or_create_attendance()
-
-    # Ensure required columns exist
-    required_columns = ["Name", "Matric Number", "Week", "Timestamp"]
-    for col in required_columns:
-        if col not in df.columns:
-            df = pd.DataFrame(columns=required_columns)
-            df.to_csv(ATTENDANCE_FILE, index=False)
-            break
-
-    # Check if attendance already marked
-    if ((df["Matric Number"] == matric_number) & (df["Week"] == week)).any():
-        st.info("✅ Attendance already marked for this student this week.")
-    else:
-        new_row = pd.DataFrame([{
-            "Name": name,
-            "Matric Number": matric_number,
-            "Week": week,
-            "Timestamp": pd.Timestamp.now()
-        }])
-        df = pd.concat([df, new_row], ignore_index=True)
-        df.to_csv(ATTENDANCE_FILE, index=False)
-        st.success("🎉 Attendance marked successfully!")
-
-    return df
-
 # -----------------------------------
 # ⚙️ Helper Functions
 def mark_attendance(name, matric, week):
@@ -162,6 +127,40 @@ with st.form("attendance_form"):
         else:
             mark_attendance(name.strip(), matric_number.strip(), week)
 
+def load_or_create_attendance():
+    if not os.path.exists(ATTENDANCE_FILE):
+        df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
+        df.to_csv(ATTENDANCE_FILE, index=False)
+    else:
+        df = pd.read_csv(ATTENDANCE_FILE)
+    return df
+
+def mark_attendance(name, matric_number, week):
+    df = load_or_create_attendance()
+
+    # Ensure required columns exist
+    required_columns = ["Name", "Matric Number", "Week", "Timestamp"]
+    for col in required_columns:
+        if col not in df.columns:
+            df = pd.DataFrame(columns=required_columns)
+            df.to_csv(ATTENDANCE_FILE, index=False)
+            break
+
+    # Check if attendance already marked
+    if ((df["Matric Number"] == matric_number) & (df["Week"] == week)).any():
+        st.info("✅ Attendance already marked for this student this week.")
+    else:
+        new_row = pd.DataFrame([{
+            "Name": name,
+            "Matric Number": matric_number,
+            "Week": week,
+            "Timestamp": pd.Timestamp.now()
+        }])
+        df = pd.concat([df, new_row], ignore_index=True)
+        df.to_csv(ATTENDANCE_FILE, index=False)
+        st.success("🎉 Attendance marked successfully!")
+
+    return df
 # -------------------- Initialize Lectures CSV --------------------
 if not os.path.exists(LECTURE_FILE):
     lecture_data = {
@@ -233,7 +232,7 @@ if mode == "Student":
 
     # Gate access
     if "attended_week" in st.session_state and st.session_state["attended_week"]:
-        week = st.session_state["attended_week"]
+        Week = st.session_state["attended_week"]
         st.success(f"Access granted for {week}")
         lecture_info = lectures_df[lectures_df["Week"] == week].iloc[0]
         st.subheader(f"📖 {week}: {lecture_info['Topic']}")
@@ -412,6 +411,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
