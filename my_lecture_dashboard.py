@@ -338,13 +338,6 @@ if pdf:
 
     st.session_state["uploaded_pdfs"][lecture_to_edit] = pdf_path
 
-# Display uploaded PDFs
-if st.session_state.get("uploaded_pdfs"):
-    st.subheader("📂 Uploaded Lecture Modules")
-    for lec, path in st.session_state["uploaded_pdfs"].items():
-        st.write(f"{lec}: {path}")
-
-
         
         # ---- Attendance Records ----
         st.divider()
@@ -377,6 +370,7 @@ if st.session_state.get("uploaded_pdfs"):
     else:
         if password:
             st.error("❌ Incorrect password. Try again.")
+
 
 
 
