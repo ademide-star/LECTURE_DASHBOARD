@@ -111,14 +111,14 @@ with st.expander("About this Portal"):
     - 🧠 Tests and interactive activities will be enabled as scheduled.
     """)
 
-# -----------------------------------
-# -------------------- Attendance Form --------------------
+# -----------------------------------#
+
 st.markdown("## 📝 Mark Attendance")
 
 with st.form("attendance_form"):
     name = st.text_input("Full Name")
     matric_number = st.text_input("Matric Number")
-    week = st.selectbox("Week", lectures_df["Week"].tolist())
+    week = st.selectbox("Week", lectures_df["Week"].tolist())  # ensure lectures_df exists
 
     submitted = st.form_submit_button("Mark Attendance")
     if submitted:
@@ -411,6 +411,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
