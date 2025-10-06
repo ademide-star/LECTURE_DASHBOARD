@@ -1,17 +1,4 @@
 import streamlit as st
-# --- HIDE STREAMLIT DEFAULT UI ELEMENTS ---
-import streamlit as st
-
-# Hide Streamlit default UI (menu, footer, GitHub, etc.)
-hide_github_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stActionButton {display: none !important;}
-    </style>
-"""
-st.markdown(hide_github_style, unsafe_allow_html=True)
 import pandas as pd
 import os
 from datetime import datetime, date
@@ -325,5 +312,6 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
