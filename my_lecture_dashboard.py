@@ -112,26 +112,15 @@ with st.expander("About this Portal"):
     """)
 
 # -----------------------------------#
+import os
+import pandas as pd
+import streamlit as st
 
-# Make sure lectures_df is loaded at the top
-lectures_df = pd.read_csv(LECTURE_FILE)
+# File paths
+LECTURE_FILE = "lectures.csv"
+ATTENDANCE_FILE = "attendance.csv"
 
-# Attendance Form
-st.markdown("## 📝 Mark Attendance")
-
-with st.form("attendance_form"):
-    name = st.text_input("Full Name")
-    matric_number = st.text_input("Matric Number")
-    week = st.selectbox("Week", lectures_df["Week"].tolist())  # lectures_df must exist
-
-    # ✅ Submit button
-    submitted = st.form_submit_button("Mark Attendance")
-
-    if submitted:
-        if not name.strip() or not matric_number.strip():
-            st.error("Please enter both Name and Matric Number.")
-        else:
-            mark_attendance(name.strip(), matric_number.strip(), week)
+# -------------------- Functions --------------------
 def load_or_create_attendance():
     if not os.path.exists(ATTENDANCE_FILE):
         df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
@@ -166,6 +155,26 @@ def mark_attendance(name, matric_number, week):
         st.success("🎉 Attendance marked successfully!")
 
     return df
+
+# -------------------- Load Lectures --------------------
+lectures_df = pd.read_csv(LECTURE_FILE)
+
+# -------------------- Attendance Form --------------------
+st.markdown("## 📝 Mark Attendance")
+
+with st.form("attendance_form"):
+    name = st.text_input("Full Name")
+    matric_number = st.text_input("Matric Number")
+    week = st.selectbox("Week", lectures_df["Week"].tolist())
+
+    # Submit button
+    submitted = st.form_submit_button("Mark Attendance")
+
+    if submitted:
+        if not name.strip() or not matric_number.strip():
+            st.error("Please enter both Name and Matric Number.")
+        else:
+            mark_attendance(name.strip(), matric_number.strip(), week)
 # -------------------- Initialize Lectures CSV --------------------
 if not os.path.exists(LECTURE_FILE):
     lecture_data = {
@@ -416,6 +425,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
