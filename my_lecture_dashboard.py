@@ -338,16 +338,15 @@ if pdf:
 
     st.session_state["uploaded_pdfs"][lecture_to_edit] = pdf_path
 
-        
         # ---- Attendance Records ----
-        st.divider()
-        st.markdown("### 🧾 Attendance Records")
-        if os.path.exists(ATTENDANCE_FILE):
-            att = pd.read_csv(ATTENDANCE_FILE)
-            st.dataframe(att)
-            st.download_button("Download Attendance CSV", att.to_csv(index=False).encode(), "attendance.csv")
-        else:
-            st.info("No attendance records yet.")
+    st.divider()
+    st.markdown("### 🧾 Attendance Records")
+    if os.path.exists(ATTENDANCE_FILE):
+        att = pd.read_csv(ATTENDANCE_FILE)
+        st.dataframe(att)
+        st.download_button("Download Attendance CSV", att.to_csv(index=False).encode(), "attendance.csv")
+    else:
+        st.info("No attendance records yet.")
 
         # ---- Classwork Submissions ----
         st.markdown("### 🧠 Classwork Submissions")
@@ -370,6 +369,7 @@ if pdf:
     else:
         if password:
             st.error("❌ Incorrect password. Try again.")
+
 
 
 
