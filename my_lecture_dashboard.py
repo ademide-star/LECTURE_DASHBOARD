@@ -73,10 +73,11 @@ def mark_attendance(name, matric, week):
     return df
 # -----------------------------------#
 for key, title in [("Brief", "Lecture Brief"), ("Assignment", "Assignment  Questions"),("Classwork", "Classwork Questions")]:
-    text = lecture_info.get(key, "")
-    if text.strip():
-        st.markdown(f"### {title}")
-        st.write(text)
+import os
+import pandas as pd
+import streamlit as st
+
+LECTURE_FILE = "lectures.csv"
 
 # 🧾 Initialize lectures CSV if missing
 if not os.path.exists(LECTURE_FILE):
@@ -102,7 +103,30 @@ if not os.path.exists(LECTURE_FILE):
     }
     pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
 
+# Load lectures
 lectures_df = pd.read_csv(LECTURE_FILE)
+
+# ✅ Pick a lecture row (example: first week)
+lecture_info = lectures_df.iloc[0].to_dict()  # convert Series to dictionary
+
+# Merge with hardcoded info if desired
+hardcoded_info = {
+    "Brief": "Introduction to proteins, amino acids, and their biological roles.",
+    "Assignment": "Answer Q1-Q5 on amino acid properties; prepare a short report on protein structures.",
+    "Classwork": "Discuss protein structures in groups; submit summary."
+}
+
+# Fill in missing fields from hardcoded info
+for key, value in hardcoded_info.items():
+    if not lecture_info.get(key, "").strip():  # only if CSV field is empty
+        lecture_info[key] = value
+
+# Display sections safely
+for key, title in [("Brief", "Lecture Brief"), ("Assignment", "Assignment Questions"), ("Classwork", "Classwork Questions")]:
+    text = lecture_info.get(key, "")
+    if text.strip():
+        st.markdown(f"### {title}")
+        st.write(text)
 
 # -----------------------------------
 # ⚙️ Helper Functions
@@ -374,6 +398,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
