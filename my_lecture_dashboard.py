@@ -217,9 +217,9 @@ else:
     st.warning("Please upload a lecture file to continue.")
    
         # Seminar upload (opens mid-semester, presentation in November 3rd week)
-        st.divider()
-        st.subheader("🎤 Mid-Semester Seminar Submission")
-        today = date.today()
+    st.divider()
+    st.subheader("🎤 Mid-Semester Seminar Submission")
+    today = date.today()
         if today >= date(today.year, 10, 20):  # Opens around mid-November
             seminar_file = st.file_uploader("Upload Seminar PPT (after mid-semester)", type=["ppt", "pptx"])
             if seminar_file:
@@ -359,6 +359,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
