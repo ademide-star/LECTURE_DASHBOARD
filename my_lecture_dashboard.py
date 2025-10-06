@@ -73,9 +73,6 @@ def mark_attendance(name, matric, week):
     return df
 # -----------------------------------#
 for key, title in [("Brief", "Lecture Brief"), ("Assignment", "Assignment  Questions"),("Classwork", "Classwork Questions")]:
-import os
-import pandas as pd
-import streamlit as st
 
 LECTURE_FILE = "lectures.csv"
 
@@ -398,6 +395,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
