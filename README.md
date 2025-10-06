@@ -1,5 +1,4 @@
-# LECTURE_DASHBOARD
-# 📘 BIO 203 Lecture Dashboard  
+# LECTURE_DASHBOARD 
 *A Streamlit-based Course Management & Attendance System*
 
 ---
