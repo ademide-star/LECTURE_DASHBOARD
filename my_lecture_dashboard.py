@@ -29,22 +29,57 @@ SEMINAR_DIR = os.path.join(MODULES_DIR, "seminars")
 os.makedirs(MODULES_DIR, exist_ok=True)
 os.makedirs(SEMINAR_DIR, exist_ok=True)
 
-import os
-import pandas as pd
-import streamlit as st
+# --- HIDE STREAMLIT DEFAULT UI ELEMENTS ---
+hide_streamlit_style = """
+    <style>
+    /* Hide Streamlit footer */
+    footer {visibility: hidden;}
 
-# -------------------- File Paths --------------------
-LECTURE_FILE = "lectures.csv"
-ATTENDANCE_FILE = "attendance.csv"
+    /* Hide GitHub button and Streamlit menu */
+    #MainMenu {visibility: hidden;}
+    .viewerBadge_container__1QSob,
+    .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK {
+        display: none !important;
+    }
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
 
-# -------------------- Attendance --------------------
+# -----------------------------------
+# 🧾 Initialize lectures CSV if missing
+if not os.path.exists(LECTURE_FILE):
+    lecture_data = {
+        "Week": [
+            "Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
+            "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"
+        ],
+        "Topic": [
+            "Chemicals of Life: Carbohydrates, lipids, proteins, nucleic acids, and biological significance.",
+            "Enzymology: Characteristics, mechanism, factors affecting activity, enzyme classification.",
+            "Nutrition, Digestion, and Absorption in plants and animals.",
+            "Biosynthesis: Photosynthesis (light & dark reactions) and Protein Synthesis (transcription & translation).",
+            "Cell Membrane Structure & Function: Lipid bilayer, membrane proteins, transport, signal transduction.",
+            "Osmoregulation, Excretion, and Transport in Animals: Kidney function, circulatory & respiratory transport.",
+            "Plant Growth Hormones and Regulation: Auxins, gibberellins, cytokinins, abscisic acid, ethylene.",
+            "Homeostasis in Animals: Nervous & endocrine coordination, temperature, blood glucose, water balance.",
+            "Plant Water Relations and Growth: Water uptake, transport, transpiration, growth regulation, stress responses."
+        ],
+        "Brief": [""] * 9,
+        "Assignment": [""] * 9,
+        "Classwork": [""] * 9
+    }
+    pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
+
+lectures_df = pd.read_csv(LECTURE_FILE)
+
 # -----------------------------------
 # ⚙️ Helper Functions
 def mark_attendance(name, matric, week):
     df = pd.read_csv(ATTENDANCE_FILE) if os.path.exists(ATTENDANCE_FILE) else pd.DataFrame(columns=["Timestamp", "Matric Number", "Name", "Week"])
-    if ((df["Matric Number"] == matric) & (df["Week"] == week)).any():
+    if ((df["Matric"] == matric) & (df["Week"] == week)).any():
         st.warning(f"Attendance already marked for {week}.")
         return True
     new_entry = {"Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Matric Number": matric, "Name": name, "Week": week}
@@ -111,172 +146,7 @@ with st.expander("About this Portal"):
     - 🧠 Tests and interactive activities will be enabled as scheduled.
     """)
 
-# -----------------------------------#
-import os
-import pandas as pd
-import streamlit as st
-
-# -------------------- File Paths --------------------
-LECTURE_FILE = "lectures.csv"
-ATTENDANCE_FILE = "attendance.csv"
-
-# -------------------- Initialize Lectures CSV --------------------
-if not os.path.exists(LECTURE_FILE):
-    lecture_data = {
-        "Week": [
-            "Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
-            "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"
-        ],
-        "Topic": [
-            "Chemicals of Life: Carbohydrates, lipids, proteins, nucleic acids, and biological significance.",
-            "Enzymology: Characteristics, mechanism, factors affecting activity, enzyme classification.",
-            "Nutrition, Digestion, and Absorption in plants and animals.",
-            "Biosynthesis: Photosynthesis (light & dark reactions) and Protein Synthesis (transcription & translation).",
-            "Cell Membrane Structure & Function: Lipid bilayer, membrane proteins, transport, signal transduction.",
-            "Osmoregulation, Excretion, and Transport in Animals: Kidney function, circulatory & respiratory transport.",
-            "Plant Growth Hormones and Regulation: Auxins, gibberellins, cytokinins, abscisic acid, ethylene.",
-            "Homeostasis in Animals: Nervous & endocrine coordination, temperature, blood glucose, water balance.",
-            "Plant Water Relations and Growth: Water uptake, transport, transpiration, growth regulation, stress responses."
-        ],
-        "Brief": [""] * 9,
-        "Assignment": [""] * 9,
-        "Classwork": [""] * 9
-    }
-    pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
-
-# Load lectures CSV
-lectures_df = pd.read_csv(LECTURE_FILE)
-
-# -------------------- Lecture Info --------------------
-# Pick the first lecture row as example
-lecture_info = lectures_df.iloc[0].to_dict()
-
-# Hardcoded defaults
-hardcoded_info = {
-    "Brief": "Introduction to proteins, amino acids, and their biological roles.",
-    "Assignment": "Answer Q1-Q5 on amino acid properties; prepare a short report on protein structures.",
-    "Classwork": "Discuss protein structures in groups; submit summary."
-}
-
-# Fill empty CSV fields safely
-for key, value in hardcoded_info.items():
-    if not str(lecture_info.get(key, "")).strip():
-        lecture_info[key] = value
-
-# Display lecture info
-st.title(f"📚 {lecture_info.get('Topic', 'Untitled Lecture')}")
-
-for key, title in [("Brief", "Lecture Brief"),
-                   ("Assignment", "Assignment Questions"),
-                   ("Classwork", "Classwork Questions")]:
-    text = str(lecture_info.get(key, ""))
-    if text.strip():
-        st.markdown(f"### {title}")
-        st.write(text)
-
-# -------------------- Attendance Functions --------------------
-def load_or_create_attendance():
-    if not os.path.exists(ATTENDANCE_FILE):
-        df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
-        df.to_csv(ATTENDANCE_FILE, index=False)
-    else:
-        df = pd.read_csv(ATTENDANCE_FILE)
-    return df
-
-def mark_attendance(name, matric_number, week):
-    df = load_or_create_attendance()
-
-    # Ensure required columns exist
-    required_columns = ["Name", "Matric Number", "Week", "Timestamp"]
-    for col in required_columns:
-        if col not in df.columns:
-            df = pd.DataFrame(columns=required_columns)
-            df.to_csv(ATTENDANCE_FILE, index=False)
-            break
-
-    # Check for duplicate attendance
-    if ((df["Matric Number"] == matric_number) & (df["Week"] == week)).any():
-        st.info("✅ Attendance already marked for this student this week.")
-    else:
-        new_row = pd.DataFrame([{
-            "Name": name,
-            "Matric Number": matric_number,
-            "Week": week,
-            "Timestamp": pd.Timestamp.now()
-        }])
-        df = pd.concat([df, new_row], ignore_index=True)
-        df.to_csv(ATTENDANCE_FILE, index=False)
-        st.success("🎉 Attendance marked successfully!")
-
-    return df
-
-# -------------------- Attendance Form --------------------
-st.markdown("## 📝 Mark Attendance")
-
-with st.form("attendance_form"):
-    name = st.text_input("Full Name")
-    matric_number = st.text_input("Matric Number")
-    week = st.selectbox("Week", lectures_df["Week"].tolist())
-
-    submitted = st.form_submit_button("Mark Attendance")
-
-    if submitted:
-        if not name.strip() or not matric_number.strip():
-            st.error("Please enter both Name and Matric Number.")
-        else:
-            mark_attendance(name.strip(), matric_number.strip(), week)
-# -------------------- Initialize Lectures CSV --------------------
-if not os.path.exists(LECTURE_FILE):
-    lecture_data = {
-        "Week": [
-            "Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
-            "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"
-        ],
-        "Topic": [
-            "Chemicals of Life: Carbohydrates, lipids, proteins, nucleic acids, and biological significance.",
-            "Enzymology: Characteristics, mechanism, factors affecting activity, enzyme classification.",
-            "Nutrition, Digestion, and Absorption in plants and animals.",
-            "Biosynthesis: Photosynthesis (light & dark reactions) and Protein Synthesis (transcription & translation).",
-            "Cell Membrane Structure & Function: Lipid bilayer, membrane proteins, transport, signal transduction.",
-            "Osmoregulation, Excretion, and Transport in Animals: Kidney function, circulatory & respiratory transport.",
-            "Plant Growth Hormones and Regulation: Auxins, gibberellins, cytokinins, abscisic acid, ethylene.",
-            "Homeostasis in Animals: Nervous & endocrine coordination, temperature, blood glucose, water balance.",
-            "Plant Water Relations and Growth: Water uptake, transport, transpiration, growth regulation, stress responses."
-        ],
-        "Brief": [""] * 9,
-        "Assignment": [""] * 9,
-        "Classwork": [""] * 9
-    }
-    pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
-
-lectures_df = pd.read_csv(LECTURE_FILE)
-
-# -------------------- Lecture Info --------------------
-# Pick first lecture row (example)
-lecture_info = lectures_df.iloc[0].to_dict()
-
-# Hardcoded defaults
-hardcoded_info = {
-    "Brief": "Introduction to proteins, amino acids, and their biological roles.",
-    "Assignment": "Answer Q1-Q5 on amino acid properties; prepare a short report on protein structures.",
-    "Classwork": "Discuss protein structures in groups; submit summary."
-}
-
-# Fill empty CSV fields safely
-for key, value in hardcoded_info.items():
-    if not str(lecture_info.get(key, "")).strip():  # convert to string to avoid AttributeError
-        lecture_info[key] = value
-
-# Display lecture info safely
-st.title(f"📚 {lecture_info.get('Topic', 'Untitled Lecture')}")
-
-for key, title in [("Brief", "Lecture Brief"),
-                   ("Assignment", "Assignment Questions"),
-                   ("Classwork", "Classwork Questions")]:
-    text = str(lecture_info.get(key, ""))
-    if text.strip():
-        st.markdown(f"### {title}")
-        st.write(text)
+# -----------------------------------
 # 👩‍🎓 STUDENT MODE
 if mode == "Student":
     st.subheader("🎓 Student Login & Attendance")
@@ -296,7 +166,7 @@ if mode == "Student":
 
     # Gate access
     if "attended_week" in st.session_state and st.session_state["attended_week"]:
-        Week = st.session_state["attended_week"]
+        week = st.session_state["attended_week"]
         st.success(f"Access granted for {week}")
         lecture_info = lectures_df[lectures_df["Week"] == week].iloc[0]
         st.subheader(f"📖 {week}: {lecture_info['Topic']}")
@@ -473,24 +343,4 @@ if mode == "Teacher/Admin":
 
 
 
-
    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
