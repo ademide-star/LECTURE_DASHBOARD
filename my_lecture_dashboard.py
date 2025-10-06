@@ -28,14 +28,7 @@ SEMINAR_DIR = os.path.join(MODULES_DIR, "seminars")
 
 os.makedirs(MODULES_DIR, exist_ok=True)
 os.makedirs(SEMINAR_DIR, exist_ok=True)
-import os
-import pandas as pd
-import streamlit as st
-
-ATTENDANCE_FILE = "attendance.csv"
-
 def load_or_create_attendance():
-    # ✅ If the CSV doesn't exist, create it with proper headers
     if not os.path.exists(ATTENDANCE_FILE):
         df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
         df.to_csv(ATTENDANCE_FILE, index=False)
@@ -43,26 +36,24 @@ def load_or_create_attendance():
         df = pd.read_csv(ATTENDANCE_FILE)
     return df
 
-
-def mark_attendance(name, matric, week):
+def mark_attendance(name, matric_number, week):
     df = load_or_create_attendance()
 
-    # ✅ Handle missing columns safely
+    # Ensure columns exist
     required_columns = ["Name", "Matric Number", "Week", "Timestamp"]
     for col in required_columns:
         if col not in df.columns:
-            st.warning(f"Column '{col}' missing, recreating attendance file.")
             df = pd.DataFrame(columns=required_columns)
             df.to_csv(ATTENDANCE_FILE, index=False)
             break
 
-    # ✅ Check if already marked
-    if ((df["Matric Number"] == matric) & (df["Week"] == week)).any():
+    # Check for duplicate attendance
+    if ((df["Matric Number"] == matric_number) & (df["Week"] == week)).any():
         st.info("✅ Attendance already marked for this student this week.")
     else:
         new_row = pd.DataFrame([{
             "Name": name,
-            "Matric Number": matric,
+            "Matric Number": matric_number,
             "Week": week,
             "Timestamp": pd.Timestamp.now()
         }])
@@ -394,6 +385,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
