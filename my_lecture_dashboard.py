@@ -113,20 +113,25 @@ with st.expander("About this Portal"):
 
 # -----------------------------------#
 
+# Make sure lectures_df is loaded at the top
+lectures_df = pd.read_csv(LECTURE_FILE)
+
+# Attendance Form
 st.markdown("## 📝 Mark Attendance")
 
 with st.form("attendance_form"):
     name = st.text_input("Full Name")
     matric_number = st.text_input("Matric Number")
-    week = st.selectbox("Week", lectures_df["Week"].tolist())  # ensure lectures_df exists
+    week = st.selectbox("Week", lectures_df["Week"].tolist())  # lectures_df must exist
 
+    # ✅ Submit button
     submitted = st.form_submit_button("Mark Attendance")
+
     if submitted:
         if not name.strip() or not matric_number.strip():
             st.error("Please enter both Name and Matric Number.")
         else:
             mark_attendance(name.strip(), matric_number.strip(), week)
-
 def load_or_create_attendance():
     if not os.path.exists(ATTENDANCE_FILE):
         df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
@@ -411,6 +416,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
