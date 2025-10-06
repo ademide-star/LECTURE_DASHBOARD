@@ -28,45 +28,16 @@ SEMINAR_DIR = os.path.join(MODULES_DIR, "seminars")
 
 os.makedirs(MODULES_DIR, exist_ok=True)
 os.makedirs(SEMINAR_DIR, exist_ok=True)
-def load_or_create_attendance():
-    if not os.path.exists(ATTENDANCE_FILE):
-        df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
-        df.to_csv(ATTENDANCE_FILE, index=False)
-    else:
-        df = pd.read_csv(ATTENDANCE_FILE)
-    return df
 
-def mark_attendance(name, matric_number, week):
-    df = load_or_create_attendance()
+import os
+import pandas as pd
+import streamlit as st
 
-    # Ensure columns exist
-    required_columns = ["Name", "Matric Number", "Week", "Timestamp"]
-    for col in required_columns:
-        if col not in df.columns:
-            df = pd.DataFrame(columns=required_columns)
-            df.to_csv(ATTENDANCE_FILE, index=False)
-            break
-
-    # Check for duplicate attendance
-    if ((df["Matric Number"] == matric_number) & (df["Week"] == week)).any():
-        st.info("✅ Attendance already marked for this student this week.")
-    else:
-        new_row = pd.DataFrame([{
-            "Name": name,
-            "Matric Number": matric_number,
-            "Week": week,
-            "Timestamp": pd.Timestamp.now()
-        }])
-        df = pd.concat([df, new_row], ignore_index=True)
-        df.to_csv(ATTENDANCE_FILE, index=False)
-        st.success("🎉 Attendance marked successfully!")
-
-    return df
-# -----------------------------------#
-
+# -------------------- File Paths --------------------
 LECTURE_FILE = "lectures.csv"
+ATTENDANCE_FILE = "attendance.csv"
 
-# 🧾 Initialize lectures CSV if missing
+# -------------------- Initialize Lectures CSV --------------------
 if not os.path.exists(LECTURE_FILE):
     lecture_data = {
         "Week": [
@@ -90,30 +61,85 @@ if not os.path.exists(LECTURE_FILE):
     }
     pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
 
-# Load lectures
 lectures_df = pd.read_csv(LECTURE_FILE)
 
-# ✅ Pick a lecture row (example: first week)
-lecture_info = lectures_df.iloc[0].to_dict()  # convert Series to dictionary
+# -------------------- Lecture Info --------------------
+# Pick first lecture row (example)
+lecture_info = lectures_df.iloc[0].to_dict()
 
-# Merge with hardcoded info if desired
+# Hardcoded defaults
 hardcoded_info = {
     "Brief": "Introduction to proteins, amino acids, and their biological roles.",
     "Assignment": "Answer Q1-Q5 on amino acid properties; prepare a short report on protein structures.",
     "Classwork": "Discuss protein structures in groups; submit summary."
 }
 
-# Fill in missing fields from hardcoded info
+# Fill empty CSV fields safely
 for key, value in hardcoded_info.items():
-    if not lecture_info.get(key, "").strip():  # only if CSV field is empty
+    if not str(lecture_info.get(key, "")).strip():  # convert to string to avoid AttributeError
         lecture_info[key] = value
 
-# Display sections safely
-for key, title in [("Brief", "Lecture Brief"), ("Assignment", "Assignment Questions"), ("Classwork", "Classwork Questions")]:
-    text = lecture_info.get(key, "")
+# Display lecture info safely
+st.title(f"📚 {lecture_info.get('Topic', 'Untitled Lecture')}")
+
+for key, title in [("Brief", "Lecture Brief"),
+                   ("Assignment", "Assignment Questions"),
+                   ("Classwork", "Classwork Questions")]:
+    text = str(lecture_info.get(key, ""))
     if text.strip():
         st.markdown(f"### {title}")
         st.write(text)
+
+# -------------------- Attendance --------------------
+def load_or_create_attendance():
+    if not os.path.exists(ATTENDANCE_FILE):
+        df = pd.DataFrame(columns=["Name", "Matric Number", "Week", "Timestamp"])
+        df.to_csv(ATTENDANCE_FILE, index=False)
+    else:
+        df = pd.read_csv(ATTENDANCE_FILE)
+    return df
+
+def mark_attendance(name, matric_number, week):
+    df = load_or_create_attendance()
+
+    # Ensure required columns exist
+    required_columns = ["Name", "Matric Number", "Week", "Timestamp"]
+    for col in required_columns:
+        if col not in df.columns:
+            df = pd.DataFrame(columns=required_columns)
+            df.to_csv(ATTENDANCE_FILE, index=False)
+            break
+
+    # Check if attendance already marked
+    if ((df["Matric Number"] == matric_number) & (df["Week"] == week)).any():
+        st.info("✅ Attendance already marked for this student this week.")
+    else:
+        new_row = pd.DataFrame([{
+            "Name": name,
+            "Matric Number": matric_number,
+            "Week": week,
+            "Timestamp": pd.Timestamp.now()
+        }])
+        df = pd.concat([df, new_row], ignore_index=True)
+        df.to_csv(ATTENDANCE_FILE, index=False)
+        st.success("🎉 Attendance marked successfully!")
+
+    return df
+
+# -------------------- Attendance Form --------------------
+st.markdown("## 📝 Mark Attendance")
+
+with st.form("attendance_form"):
+    name = st.text_input("Full Name")
+    matric_number = st.text_input("Matric Number")
+    week = st.selectbox("Week", lectures_df["Week"].tolist())
+
+    submitted = st.form_submit_button("Mark Attendance")
+    if submitted:
+        if not name.strip() or not matric_number.strip():
+            st.error("Please enter both Name and Matric Number.")
+        else:
+            mark_attendance(name.strip(), matric_number.strip(), week)
 
 # -----------------------------------
 # ⚙️ Helper Functions
@@ -385,6 +411,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
