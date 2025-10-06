@@ -218,11 +218,13 @@ else:
     st.warning(
         "Seminar submissions will open mid-semester (around 20th October)."
     )
-
-
-
 # -----------------------------------
  # PDF download
+if "attended_week" in st.session_state and st.session_state["attended_week"]:
+    week = st.session_state["attended_week"]
+else:
+    week = "default_week"  # or handle as warning / skip
+
 pdf_path = f"{MODULES_DIR}/{week.replace(' ', '_')}.pdf"
 if os.path.exists(pdf_path):
     with open(pdf_path, "rb") as f:
@@ -369,6 +371,7 @@ if pdf:
 else:
     if password:
         st.error("❌ Incorrect password. Try again.")
+
 
 
 
