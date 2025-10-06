@@ -238,49 +238,6 @@ else:
     st.info("Lecture PDF module not yet uploaded by the instructor.")
                   
 
-# Example timing configuration
-TOTAL_DURATION = 60 * 60           # 1 hour lecture
-SHOW_TIMER_THRESHOLD = 20 * 60     # only show classwork in last 20 minutes
-
-# Initialize timer state once per session
-if "start_time" not in st.session_state:
-    st.session_state.start_time = time.time()
-
-elapsed = time.time() - st.session_state.start_time
-remaining = TOTAL_DURATION - elapsed
-
-# ---- Time logic ----
-if remaining <= 0:
-    st.error("⏰ Lecture ended. Classwork closed.")
-    st.stop()
-
-# ---- Before last 20 minutes ----
-elif remaining > SHOW_TIMER_THRESHOLD:
-    mins_hidden = int((remaining - SHOW_TIMER_THRESHOLD) // 60)
-    st.info(f"✅ Classwork will open {mins_hidden} minutes before the end of lecture.")
-else:
-    # ---- Show classwork form when 20 minutes remain ----
-    st.subheader("📚 Classwork")
-    st.markdown("### 🧩 Classwork Section")
-    mins, secs = divmod(int(remaining), 60)
-    st.markdown(f"⏳ Time remaining: **{mins:02d}:{secs:02d}**")
-
-    # --- Classwork ---
-    if lecture_info["Classwork"].strip():
-        st.markdown("### 🧩 Classwork Questions")
-        questions = [q.strip() for q in lecture_info["Classwork"].split(";") if q.strip()]
-
-        with st.form("cw_form"):
-            answers = [
-                st.text_input(f"Q{i+1}: {q}") for i, q in enumerate(questions)
-            ]
-            submit_cw = st.form_submit_button("Submit Answers")
-
-            if submit_cw:
-                save_classwork(name, matric, week, answers)
-                st.success("✅ Classwork submitted successfully!")
-    else:
-        st.info("Classwork not yet released.")
 
         
 # ===============================================================
@@ -350,6 +307,7 @@ if mode == "Teacher/Admin":
     else:
         if password:
             st.error("❌ Incorrect password. Try again.")
+
 
 
 
