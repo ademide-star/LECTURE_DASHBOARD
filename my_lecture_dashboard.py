@@ -217,16 +217,26 @@ else:
     st.warning("Please upload a lecture file to continue.")
    
         # Seminar upload (opens mid-semester, presentation in November 3rd week)
-    st.divider()
-    st.subheader("🎤 Mid-Semester Seminar Submission")
-    today = date.today()
-        if today >= date(today.year, 10, 20):  # Opens around mid-November
-            seminar_file = st.file_uploader("Upload Seminar PPT (after mid-semester)", type=["ppt", "pptx"])
-            if seminar_file:
-                save_seminar(name, matric, seminar_file)
-            st.info("Seminar presentations will hold in the **3rd week of November**.")
-        else:
-            st.warning("Seminar submissions will open mid-semester (around 4th November).")
+
+st.divider()
+st.subheader("🎤 Mid-Semester Seminar Submission")
+
+today = date.today()
+# Opens around mid-October/November
+if today >= date(today.year, 10, 20):
+    seminar_file = st.file_uploader(
+        "Upload Seminar PPT (after mid-semester)", type=["ppt", "pptx"]
+    )
+    if seminar_file:
+        save_seminar(name, matric, seminar_file)
+        st.success("✅ Seminar uploaded successfully!")
+    st.info("Seminar presentations will hold in the **3rd week of November**.")
+else:
+    st.warning(
+        "Seminar submissions will open mid-semester (around 20th October)."
+    )
+
+
 
 # -----------------------------------
  # PDF download
@@ -359,6 +369,7 @@ if mode == "Teacher/Admin":
 
 
    
+
 
 
 
