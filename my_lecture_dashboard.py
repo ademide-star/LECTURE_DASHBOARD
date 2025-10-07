@@ -37,22 +37,25 @@ footer {visibility: hidden;}
 # -----------------------------
 if not os.path.exists(LECTURE_FILE):
     lecture_data = {
-        "Week": ["Week 1–2", "Week 3–4", "Week 5–6", "Week 7–8",
-                 "Week 9", "Week 10–11", "Week 12", "Week 13–14", "Week 15"],
+         "Week": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6",
+                 "Week 7", "Week 8", "Week 9", "Week 10", "Week 11–14", "Week 15"],
         "Topic": [
-            "Chemicals of Life: Carbohydrates, lipids, proteins, nucleic acids, and biological significance.",
-            "Enzymology: Characteristics, mechanism, factors affecting activity, enzyme classification.",
-            "Nutrition, Digestion, and Absorption in plants and animals.",
-            "Biosynthesis: Photosynthesis (light & dark reactions) and Protein Synthesis (transcription & translation).",
-            "Cell Membrane Structure & Function: Lipid bilayer, membrane proteins, transport, signal transduction.",
-            "Osmoregulation, Excretion, and Transport in Animals: Kidney function, circulatory & respiratory transport.",
-            "Plant Growth Hormones and Regulation: Auxins, gibberellins, cytokinins, abscisic acid, ethylene.",
-            "Homeostasis in Animals: Nervous & endocrine coordination, temperature, blood glucose, water balance.",
-            "Plant Water Relations and Growth: Water uptake, transport, transpiration, growth regulation, stress responses."
+            "Introduction to Biochemistry and Cell Chemistry",
+            "Amino Acids – Structure, Classification, and Properties",
+            "Peptide Bond and Protein Structure",
+            "Protein Denaturation and Identification Methods",
+            "Carbohydrates – Chemistry and Classification",
+            "Biological Functions of Carbohydrates",
+            "Mid-Semester Test / Revision",
+            "Lipids – Chemistry and Functions",
+            "Nucleic Acids – Structure and Components",
+            "Interrelationship Among Biomolecules",
+            "Advanced Discussion and Practical Reinforcement",
+            "Final Review and Examination"
         ],
-        "Brief": [""]*9,
-        "Assignment": [""]*9,
-        "Classwork": [""]*9
+        "Brief": [""] * 12,
+        "Assignment": [""] * 12,
+        "Classwork": [""] * 12
     }
     pd.DataFrame(lecture_data).to_csv(LECTURE_FILE, index=False)
 
@@ -167,7 +170,7 @@ def display_seminar_upload(name, matric):
 # Streamlit Layout
 # -----------------------------
 st.set_page_config(page_title="BIO 203 Portal", page_icon="🧬", layout="wide")
-st.title("📘 BIO 203: General Physiology Course Portal")
+st.title("📘 BIO 203: Biochemistry Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
@@ -278,3 +281,4 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
