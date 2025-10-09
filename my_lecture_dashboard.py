@@ -270,14 +270,18 @@ if mode=="Student":
         if drawing:
             st.success("✅ Drawing uploaded successfully!")
         
-        if drawing:
-    # Get file extension safely
-            ext = drawing.name.split('.')[-1]  # safer than drawing.type
-            save_path = f"submissions/{student_name}_week{week}_drawing.{ext}"
-    
-            with open(save_path, "wb") as f:
-                f.write(drawing.getbuffer())
-            st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
+       drawing = st.file_uploader("Upload a photo or scanned diagram (jpg, png, pdf)", type=["jpg","jpeg","png","pdf"])
+
+       if drawing:
+           if student_name.strip() == "":
+               st.error("❌ Please enter your name before submitting.")
+           else:
+               ext = drawing.name.split('.')[-1]  # get file extension safely
+               save_path = f"submissions/{student_name}_week{week}_drawing.{ext}"
+               with open(save_path, "wb") as f:
+                   f.write(drawing.getbuffer())
+               st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
+
 
 
         # Seminar upload
@@ -337,6 +341,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
