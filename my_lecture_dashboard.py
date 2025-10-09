@@ -266,23 +266,31 @@ if mode=="Student":
         else: st.info("Classwork not yet released.")
             
         st.subheader("Upload Your Drawing / Diagram")
-        drawing = st.file_uploader("Upload a photo or scanned diagram (jpg, png, pdf)", type=["jpg","jpeg","png","pdf"])
-        if drawing:
-            st.success("✅ Drawing uploaded successfully!")
-        
-            drawing = st.file_uploader("Upload a photo or scanned diagram (jpg, png, pdf)", type=["jpg","jpeg","png","pdf"])
+        st.write("Draw the bacterial shapes (coccus, bacillus, spirillum, vibrio) on paper, take a photo, and upload it below.")
+
+# Single file uploader with a unique key
+        drawing = st.file_uploader(
+            "Upload your drawing (jpg, png, pdf)", 
+            type=["jpg","jpeg","png","pdf"], 
+            key="week2_drawing"
+)
 
         if drawing:
             if student_name.strip() == "":
-               st.error("❌ Please enter your name before submitting.")
-            else:
-               ext = drawing.name.split('.')[-1]  # get file extension safely
-               save_path = f"submissions/{student_name}_week{week}_drawing.{ext}"
-               with open(save_path, "wb") as f:
-                   f.write(drawing.getbuffer())
-               st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
+                st.error("❌ Please enter your name before submitting.")
+        else:
+        # Ensure submissions folder exists
+            import os
+            os.makedirs("submissions", exist_ok=True)
 
+        # Safe file extension
+            ext = drawing.name.split('.')[-1]
+            save_path = f"submissions/{student_name}_week{week}_drawing.{ext}"
 
+        # Save the uploaded file
+        with open(save_path, "wb") as f:
+            f.write(drawing.getbuffer())
+        st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
 
         # Seminar upload
         st.divider()
@@ -341,6 +349,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
