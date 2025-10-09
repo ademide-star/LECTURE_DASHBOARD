@@ -169,8 +169,8 @@ def display_seminar_upload(name, matric):
 # -----------------------------
 # Streamlit Layout
 # -----------------------------
-st.set_page_config(page_title="BIO 203 Portal", page_icon="🧬", layout="wide")
-st.title("📘 BIO 203: Biochemistry Course Portal")
+st.set_page_config(page_title="MCB 221 Portal", page_icon="🧬", layout="wide")
+st.title("📘 MCB 221: General Microbiology Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
@@ -322,5 +322,6 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
