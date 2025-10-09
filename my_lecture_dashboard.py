@@ -309,58 +309,41 @@ import streamlit as st
 import os
 import re
 
-st.set_page_config(page_title="MCB 221 Assignments Submission")
+st.set_page_config(page_title="MCB 221 Assignment Submission")
 st.title("MCB 221 – General Microbiology")
-st.write("Submit your Week 1 and Week 2 assignments. Fill all required fields and upload drawings for Week 2 if needed.")
+st.write("Submit your assignments for Week 1 and Week 2. Upload your files below.")
 
 # --- Student Info ---
-student_name = st.text_input("Enter your full name")
-if not student_name:
-    st.warning("Please enter your name to continue.")
+student_name = st.text_input("Enter your full name", key="student_name_input")
+week = st.selectbox("Select Week", ["1", "2"], key="week_select")
 
 # --- Ensure submissions folder exists ---
 os.makedirs("submissions", exist_ok=True)
 
-# ================= WEEK 1 =================
-st.subheader("Week 1 Assignment")
-
-drawing = st.file_uploader(
-    "Upload drawing (jpg, png, pdf)", 
-    type=["jpg","jpeg","png","pdf"], 
-    key="week2_drawing"
+# --- File Upload ---
+st.subheader(f"Upload Assignment for Week {week}")
+uploaded_file = st.file_uploader(
+    f"Choose file to upload for Week {week} (PDF, DOCX, or image)", 
+    type=["pdf","docx","jpg","jpeg","png"], 
+    key=f"file_uploader_week{week}"
 )
 
-# ================= SUBMIT =================
-if st.button("Submit Assignments"):
+# --- Submit Button ---
+if st.button(f"Submit Week {week} Assignment", key=f"submit_week{week}"):
     if not student_name.strip():
-        st.error("❌ Please enter your name before submitting.")
+        st.error("❌ Please enter your full name before submitting.")
+    elif uploaded_file is None:
+        st.error(f"❌ Please upload a file for Week {week}.")
     else:
+        # Safe filename
         safe_name = re.sub(r'[^a-zA-Z0-9_-]', '_', student_name)
-
-        # Save Week 1 text answers
-        w1_path = f"submissions/{safe_name}_week1_answers.txt"
-        with open(w1_path, "w") as f:
-            for q, a in zip(week1_qs, week1_answers):
-                f.write(f"{q}\nAnswer: {a}\n\n")
-        st.success(f"✅ Week 1 answers saved as {w1_path}")
-
-        # Save Week 2 text answers
-        w2_path = f"submissions/{safe_name}_week2_answers.txt"
-        with open(w2_path, "w") as f:
-            for q, a in zip(week2_qs, week2_answers):
-                f.write(f"{q}\nAnswer: {a}\n\n")
-        st.success(f"✅ Week 2 answers saved as {w2_path}")
-
-        # Save drawing if uploaded
-        if drawing is not None:
-            ext = drawing.name.split('.')[-1]
-            draw_path = f"submissions/{safe_name}_week2_drawing.{ext}"
-            with open(draw_path, "wb") as f:
-                f.write(drawing.getbuffer())
-            st.success(f"✅ Week 2 drawing uploaded successfully as {drawing.name}")
-        else:
-            st.info("No drawing uploaded for Week 2.")
-
+        ext = uploaded_file.name.split('.')[-1]
+        save_path = f"submissions/{safe_name}_week{week}_assignment.{ext}"
+        
+        # Save the uploaded file
+        with open(save_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        st.success(f"✅ Assignment for Week {week} uploaded successfully as {uploaded_file.name}")
 
 
 
@@ -416,6 +399,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
