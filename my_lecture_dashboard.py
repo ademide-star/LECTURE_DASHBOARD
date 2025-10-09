@@ -265,35 +265,39 @@ if mode=="Student":
                 if submit_cw: save_classwork(name, matric, week, answers)
         else: st.info("Classwork not yet released.")
             
-        st.subheader("Upload Your Drawing / Diagram")
-        st.write("Draw the bacterial shapes (coccus, bacillus, spirillum, vibrio) on paper, take a photo, and upload it below.")
+        
+import os
+import streamlit as st
+st.subheader("Upload Your Drawing / Diagram")
+st.write("Draw the bacterial shapes (coccus, bacillus, spirillum, vibrio) on paper, take a photo, and upload it below.")
 
-# Single file uploader with a unique key
-        drawing = st.file_uploader(
-            "Upload your drawing (jpg, png, pdf)", 
-            type=["jpg","jpeg","png","pdf"], 
-            key="week2_drawing"
+# --- Student Info ---
+student_name = st.text_input("Enter your full name")
+week = st.selectbox("Select Week", ["1", "2"])
+
+# --- Drawing Upload ---
+drawing = st.file_uploader(
+    "Upload your drawing (jpg, png, pdf)", 
+    type=["jpg","jpeg","png","pdf"], 
+    key="week_drawing"
 )
 
-if drawing is not None:
-    if student_name.strip() == "":
-        st.error("❌ Please enter your name before submitting.")
-    else:
-        import os
-        os.makedirs("submissions", exist_ok=True)
+# --- Ensure folder exists ---
+os.makedirs("submissions", exist_ok=True)
 
-        # Get file extension safely
-        if hasattr(drawing, "name") and drawing.name:
-            ext = drawing.name.split('.')[-1]
-            safe_name = student_name.replace(" ", "_")
-            save_path = f"submissions/{safe_name}_week{week}_drawing.{ext}"
-            
-            # Save file
-            with open(save_path, "wb") as f:
-                f.write(drawing.getbuffer())
-            st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
-        else:
-            st.error("❌ Uploaded file is invalid.")
+# --- Submit ---
+if st.button("Submit Drawing"):
+    if not student_name or student_name.strip() == "":
+        st.error("❌ Please enter your name before submitting.")
+    elif drawing is None:
+        st.error("❌ Please upload a drawing.")
+    else:
+        ext = drawing.name.split('.')[-1]
+        safe_name = student_name.replace(" ", "_")
+        save_path = f"submissions/{safe_name}_week{week}_drawing.{ext}"
+        with open(save_path, "wb") as f:
+            f.write(drawing.getbuffer())
+        st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
 
 
         # Seminar upload
@@ -353,6 +357,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
