@@ -304,6 +304,91 @@ if st.button("Submit Drawing"):
         st.divider()
         st.subheader("🎤 Mid-Semester Seminar Submission")
         display_seminar_upload(name, matric)
+import streamlit as st
+import os
+import re
+
+st.set_page_config(page_title="MCB 221 Assignments Submission")
+st.title("MCB 221 – General Microbiology")
+st.write("Submit your Week 1 and Week 2 assignments. Fill all required fields and upload drawings for Week 2 if needed.")
+
+# --- Student Info ---
+student_name = st.text_input("Enter your full name")
+if not student_name:
+    st.warning("Please enter your name to continue.")
+
+# --- Ensure submissions folder exists ---
+os.makedirs("submissions", exist_ok=True)
+
+# ================= WEEK 1 =================
+st.subheader("Week 1 Assignment")
+week1_qs = [
+    "1. Define microbiology in your own words.",
+    "2. Name two contributions of Anton van Leeuwenhoek.",
+    "3. List three branches or applications of microbiology."
+]
+
+week1_answers = []
+for q in week1_qs:
+    answer = st.text_area(q, key=f"w1_{q}")
+    week1_answers.append(answer)
+
+# ================= WEEK 2 =================
+st.subheader("Week 2 Assignment")
+week2_qs = [
+    "1. State two differences between prokaryotic and eukaryotic cells.",
+    "2. Give two differences between bacteria and archaea.",
+    "3. Explain the three-domain system of classification in one sentence.",
+    "4. Name one eukaryotic microorganism and its importance in medicine or industry."
+]
+
+week2_answers = []
+for q in week2_qs:
+    answer = st.text_area(q, key=f"w2_{q}")
+    week2_answers.append(answer)
+
+# --- Drawing Upload for Week 2 ---
+st.subheader("Week 2 Drawing / Diagram")
+st.write("Draw bacterial shapes (coccus, bacillus, spirillum, vibrio) on paper and upload a clear photo.")
+drawing = st.file_uploader(
+    "Upload drawing (jpg, png, pdf)", 
+    type=["jpg","jpeg","png","pdf"], 
+    key="week2_drawing"
+)
+
+# ================= SUBMIT =================
+if st.button("Submit Assignments"):
+    if not student_name.strip():
+        st.error("❌ Please enter your name before submitting.")
+    else:
+        safe_name = re.sub(r'[^a-zA-Z0-9_-]', '_', student_name)
+
+        # Save Week 1 text answers
+        w1_path = f"submissions/{safe_name}_week1_answers.txt"
+        with open(w1_path, "w") as f:
+            for q, a in zip(week1_qs, week1_answers):
+                f.write(f"{q}\nAnswer: {a}\n\n")
+        st.success(f"✅ Week 1 answers saved as {w1_path}")
+
+        # Save Week 2 text answers
+        w2_path = f"submissions/{safe_name}_week2_answers.txt"
+        with open(w2_path, "w") as f:
+            for q, a in zip(week2_qs, week2_answers):
+                f.write(f"{q}\nAnswer: {a}\n\n")
+        st.success(f"✅ Week 2 answers saved as {w2_path}")
+
+        # Save drawing if uploaded
+        if drawing is not None:
+            ext = drawing.name.split('.')[-1]
+            draw_path = f"submissions/{safe_name}_week2_drawing.{ext}"
+            with open(draw_path, "wb") as f:
+                f.write(drawing.getbuffer())
+            st.success(f"✅ Week 2 drawing uploaded successfully as {drawing.name}")
+        else:
+            st.info("No drawing uploaded for Week 2.")
+
+
+
 
 # -----------------------------
 # TEACHER/ADMIN MODE
@@ -357,6 +442,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
