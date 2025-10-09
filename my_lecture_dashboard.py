@@ -275,22 +275,26 @@ if mode=="Student":
             key="week2_drawing"
 )
 
-        if drawing:
-            if student_name.strip() == "":
-                st.error("❌ Please enter your name before submitting.")
-        else:
-        # Ensure submissions folder exists
-            import os
-            os.makedirs("submissions", exist_ok=True)
+if drawing is not None:
+    if student_name.strip() == "":
+        st.error("❌ Please enter your name before submitting.")
+    else:
+        import os
+        os.makedirs("submissions", exist_ok=True)
 
-        # Safe file extension
+        # Get file extension safely
+        if hasattr(drawing, "name") and drawing.name:
             ext = drawing.name.split('.')[-1]
-            save_path = f"submissions/{student_name}_week{week}_drawing.{ext}"
+            safe_name = student_name.replace(" ", "_")
+            save_path = f"submissions/{safe_name}_week{week}_drawing.{ext}"
+            
+            # Save file
+            with open(save_path, "wb") as f:
+                f.write(drawing.getbuffer())
+            st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
+        else:
+            st.error("❌ Uploaded file is invalid.")
 
-        # Save the uploaded file
-        with open(save_path, "wb") as f:
-            f.write(drawing.getbuffer())
-        st.success(f"✅ Drawing uploaded successfully as {drawing.name}")
 
         # Seminar upload
         st.divider()
@@ -349,6 +353,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
