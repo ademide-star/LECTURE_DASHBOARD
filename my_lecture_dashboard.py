@@ -264,6 +264,15 @@ if mode=="Student":
                 submit_cw = st.form_submit_button("Submit Answers", disabled=not is_classwork_open(week))
                 if submit_cw: save_classwork(name, matric, week, answers)
         else: st.info("Classwork not yet released.")
+            
+        st.subheader("Upload Your Drawing / Diagram")
+        drawing = st.file_uploader("Upload a photo or scanned diagram (jpg, png, pdf)", type=["jpg","jpeg","png","pdf"])
+        if drawing:
+            st.success("✅ Drawing uploaded successfully!")
+        if drawing:
+            save_path = f"submissions/{student_name}_week{week}_drawing.{drawing.type.split('/')[-1]}"
+            with open(save_path, "wb") as f:
+                f.write(drawing.getbuffer())
 
         # Seminar upload
         st.divider()
@@ -322,6 +331,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
