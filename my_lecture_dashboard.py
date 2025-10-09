@@ -304,6 +304,7 @@ if st.button("Submit Drawing"):
         st.divider()
         st.subheader("🎤 Mid-Semester Seminar Submission")
         display_seminar_upload(name, matric)
+        
 import streamlit as st
 import os
 import re
@@ -322,34 +323,7 @@ os.makedirs("submissions", exist_ok=True)
 
 # ================= WEEK 1 =================
 st.subheader("Week 1 Assignment")
-week1_qs = [
-    "1. Define microbiology in your own words.",
-    "2. Name two contributions of Anton van Leeuwenhoek.",
-    "3. List three branches or applications of microbiology."
-]
 
-week1_answers = []
-for q in week1_qs:
-    answer = st.text_area(q, key=f"w1_{q}")
-    week1_answers.append(answer)
-
-# ================= WEEK 2 =================
-st.subheader("Week 2 Assignment")
-week2_qs = [
-    "1. State two differences between prokaryotic and eukaryotic cells.",
-    "2. Give two differences between bacteria and archaea.",
-    "3. Explain the three-domain system of classification in one sentence.",
-    "4. Name one eukaryotic microorganism and its importance in medicine or industry."
-]
-
-week2_answers = []
-for q in week2_qs:
-    answer = st.text_area(q, key=f"w2_{q}")
-    week2_answers.append(answer)
-
-# --- Drawing Upload for Week 2 ---
-st.subheader("Week 2 Drawing / Diagram")
-st.write("Draw bacterial shapes (coccus, bacillus, spirillum, vibrio) on paper and upload a clear photo.")
 drawing = st.file_uploader(
     "Upload drawing (jpg, png, pdf)", 
     type=["jpg","jpeg","png","pdf"], 
@@ -442,6 +416,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
