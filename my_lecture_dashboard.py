@@ -38,20 +38,20 @@ footer {visibility: hidden;}
 if not os.path.exists(LECTURE_FILE):
     lecture_data = {
          "Week": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6",
-                 "Week 7", "Week 8", "Week 9", "Week 10", "Week 11–14", "Week 15"],
+                 "Week 7", "Week 8", "Week 9", "Week 10–11", "Week 12–14", "Week 15"],
         "Topic": [
-            "Introduction to Biochemistry and Cell Chemistry",
-            "Amino Acids – Structure, Classification, and Properties",
-            "Peptide Bond and Protein Structure",
-            "Protein Denaturation and Identification Methods",
-            "Carbohydrates – Chemistry and Classification",
-            "Biological Functions of Carbohydrates",
-            "Mid-Semester Test / Revision",
-            "Lipids – Chemistry and Functions",
-            "Nucleic Acids – Structure and Components",
-            "Interrelationship Among Biomolecules",
-            "Advanced Discussion and Practical Reinforcement",
-            "Final Review and Examination"
+            "Introduction and History of Microbiology; Scope and Importance",
+            "Classification of Organisms: Prokaryotes vs Eukaryotes; Archaea vs Eubacteria",
+            "Anatomy and Cytochemistry of Bacteria and Fungi",
+            "Shapes, Groupings, and Colonial Morphology of Microorganisms",
+            "Structure of Viruses; Sterilization and Disinfection",
+            "Structure, Ecology, and Reproduction of Microbial Genera",
+            "Culture and Isolation of Microorganisms (Bacteria, Viruses, Fungi)",
+            "Nutrition and Biochemical Activities of Microorganisms",
+            "Antigens and Antibodies; Microbial Variation and Heredity",
+            "Laboratory Layout, Equipment, and Safety",
+            "Applied Microbiology: Air, Food, Milk, Water, and Soil Microbiology",
+            "Staining, Antibiotic Sensitivity, and Serological Tests"
         ],
         "Brief": [""] * 12,
         "Assignment": [""] * 12,
@@ -174,13 +174,54 @@ st.title("📘 BIO 203: Biochemistry Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
-with st.expander("About this Portal"):
+with st.expander("About this Course"):
     st.info("""
-    Welcome to the BIO 203 Course Portal.
-    - ✅ Mark your attendance each week.
-    - 📚 Access lecture briefs and modules.
-    - 🧪 Participate in weekly classwork and assignments.
-    - 💬 Submit your seminar slides after mid-semester.
+    Course Title: MCB 221 – General Microbiology;
+Credit Units: 2 (Lecture: 15 hours; Practical: 45 hours);
+
+Course Description:
+This course introduces the fundamental concepts of microbiology; exploring the nature, structure, classification, and functions of microorganisms; emphasizing laboratory techniques for culturing, isolating, and identifying microbes; and highlighting their economic, medical, and environmental significance;
+
+Learning Outcomes:
+1; Explain the basic concepts and scope of microbiology;
+2; Differentiate between prokaryotic and eukaryotic organisms;
+3; Culture and isolate microorganisms using standard techniques;
+4; Identify selected microbial groups and describe their economic relevance;
+5; Describe the layout and operation of a microbiology laboratory;
+6; Identify equipment and reagents used in microbiological analyses;
+7; Explain the principles behind basic microbiological protocols;
+
+Weekly Course Outline:
+
+Week 1; Introduction and History of Microbiology; Origin and scope of microbiology; Contributions of early microbiologists; Branches and applications of microbiology; Practical – Laboratory orientation and safety rules;
+
+Week 2; Classification of Microorganisms; Major groups of microorganisms; Prokaryotes vs eukaryotes; Archaea vs eubacteria; Practical – Observation of bacteria, fungi, and protozoa slides;
+
+Week 3; Microbial Structure and Cytochemistry I; Anatomy and structure of bacteria; Cell wall, plasma membrane, flagella, pili, capsules, endospores; Practical – Microscopic examination of bacterial structures;
+
+Week 4; Microbial Structure and Cytochemistry II; Fungal morphology (yeasts and molds); Structure and characteristics of viruses; Practical – Observation of fungal and viral structures using slides and models;
+
+Week 5; Bacterial Shapes, Arrangements, and Colonial Morphology; Cocci, bacilli, spirilla; Colony characteristics and growth patterns; Practical – Demonstration of bacterial colony morphology;
+
+Week 6; Sterilization and Disinfection; Principles and methods – dry heat, moist heat, filtration, chemical agents; Aseptic techniques; Practical – Demonstration of sterilization methods (autoclaving, flaming, use of disinfectants);
+
+Week 7; Culture and Isolation of Microorganisms I; Culture media – types, preparation, and uses; Inoculation techniques; Practical – Preparation of nutrient agar and broth media;
+
+Week 8; Culture and Isolation of Microorganisms II; Isolation and identification of bacteria and fungi; Pure culture techniques; Practical – Streak plate and pour plate methods;
+
+Week 9; Microbial Nutrition and Biochemical Activities; Nutritional requirements; Types of metabolism and enzyme activities; Practical – Simple biochemical tests (catalase, oxidase, starch hydrolysis);
+
+Week 10; Antigens, Antibodies, and Serological Tests; Concepts of immunity, antigens, and antibodies; Principles of serological reactions; Practical – Demonstration of agglutination or precipitation tests;
+
+Week 11; Microbial Variation and Heredity; Genetic variation in microorganisms; Mutation, recombination, and gene transfer (transformation, conjugation, transduction); Practical – Observation of bacterial variation and colony differences;
+
+Week 12; Economic Importance of Microbes; Beneficial microbes in food, fermentation, medicine, agriculture; Harmful microbes causing diseases and spoilage; Practical – Display of microbial products and fermented foods;
+
+Week 13; Microbiology of Air, Food, and Milk; Common microorganisms in air, food, and dairy products; Contamination and spoilage processes; Practical – Sampling of air and food for microbial growth;
+
+Week 14; Microbiology of Water and Soil; Microbial roles in water and soil ecosystems; Water-borne diseases and soil fertility; Practical – Isolation of soil microorganisms; Water testing for coliforms;
+
+Week 15; Revision and Course Review; Review of key topics and practicals; Preparation for examination; Practical – Comprehensive revision and test;
     """)
 
 # -----------------------------
@@ -240,7 +281,7 @@ if mode=="Teacher/Admin":
     if password==ADMIN_PASS:
         st.success("✅ Logged in as Admin")
         # ---- Edit Lecture ----
-        lecture_to_edit = st.selectbox("Select Lecture", lectures_df["Week"].tolist())
+        lecture_to_edit = st.selectbox("Select Lecture", lectures_df["Week"].unique())
         row_idx = lectures_df[lectures_df["Week"]==lecture_to_edit].index[0]
         brief = st.text_area("Lecture Brief", value=lectures_df.at[row_idx,"Brief"])
         assignment = st.text_area("Assignment", value=lectures_df.at[row_idx,"Assignment"])
@@ -262,7 +303,7 @@ if mode=="Teacher/Admin":
 
         # ---- Classwork Control ----
         st.subheader("📚 Classwork Control")
-        week_to_control = st.selectbox("Select Week to Open/Close Classwork", lectures_df["Week"].tolist())
+        week_to_control = st.selectbox("Select Week to Open/Close Classwork", lectures_df["Week"].unique())
         if st.button(f"Open Classwork for {week_to_control} (20 mins)"):
             open_classwork(week_to_control)
             st.success(f"Classwork for {week_to_control} is now open for 20 minutes.")
@@ -281,4 +322,5 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
