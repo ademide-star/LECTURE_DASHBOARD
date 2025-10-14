@@ -207,7 +207,6 @@ if mode=="Student":
 import os
 import streamlit as st
 st.subheader("Upload Your Drawing / Diagram")
-st.write("Draw the bacterial shapes (coccus, bacillus, spirillum, vibrio) on paper, take a photo, and upload it below.")
 
 # --- Student Info ---
 student_name = st.text_input("Enter your full name")
@@ -336,6 +335,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
