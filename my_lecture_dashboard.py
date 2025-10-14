@@ -39,20 +39,7 @@ if not os.path.exists(LECTURE_FILE):
     lecture_data = {
          "Week": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6",
                  "Week 7", "Week 8", "Week 9", "Week 10–11", "Week 12–14", "Week 15"],
-        "Topic": [
-            "Introduction and History of Microbiology; Scope and Importance",
-            "Classification of Organisms: Prokaryotes vs Eukaryotes; Archaea vs Eubacteria",
-            "Anatomy and Cytochemistry of Bacteria and Fungi",
-            "Shapes, Groupings, and Colonial Morphology of Microorganisms",
-            "Structure of Viruses; Sterilization and Disinfection",
-            "Structure, Ecology, and Reproduction of Microbial Genera",
-            "Culture and Isolation of Microorganisms (Bacteria, Viruses, Fungi)",
-            "Nutrition and Biochemical Activities of Microorganisms",
-            "Antigens and Antibodies; Microbial Variation and Heredity",
-            "Laboratory Layout, Equipment, and Safety",
-            "Applied Microbiology: Air, Food, Milk, Water, and Soil Microbiology",
-            "Staining, Antibiotic Sensitivity, and Serological Tests"
-        ],
+        
         "Brief": [""] * 12,
         "Assignment": [""] * 12,
         "Classwork": [""] * 12
@@ -170,7 +157,7 @@ def display_seminar_upload(name, matric):
 # Streamlit Layout
 # -----------------------------
 st.set_page_config(page_title="BCH 201 Portal", page_icon="🧬", layout="wide")
-st.title("📘 MCB 221: General Biochemistry Course Portal")
+st.title("📘 BCH 201 General Biochemistry Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
@@ -260,7 +247,7 @@ import streamlit as st
 import os
 import re
 
-st.title("MCB 221 – General Biochemistry")
+st.title("BCH 201 – General Biochemistry")
 st.write("Submit your assignments for Week 1 and Week 2. Upload your files below.")
 
 # --- Student Info ---
@@ -349,6 +336,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
