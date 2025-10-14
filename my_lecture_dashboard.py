@@ -169,60 +169,11 @@ def display_seminar_upload(name, matric):
 # -----------------------------
 # Streamlit Layout
 # -----------------------------
-st.set_page_config(page_title="MCB 221 Portal", page_icon="🧬", layout="wide")
-st.title("📘 MCB 221: General Microbiology Course Portal")
+st.set_page_config(page_title="BCH 201 Portal", page_icon="🧬", layout="wide")
+st.title("📘 MCB 221: General Biochemistry Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
-with st.expander("About this Course"):
-    st.info("""
-    Course Title: MCB 221 – General Microbiology;
-Credit Units: 2 (Lecture: 15 hours; Practical: 45 hours);
-
-Course Description:
-This course introduces the fundamental concepts of microbiology; exploring the nature, structure, classification, and functions of microorganisms; emphasizing laboratory techniques for culturing, isolating, and identifying microbes; and highlighting their economic, medical, and environmental significance;
-
-Learning Outcomes:
-1; Explain the basic concepts and scope of microbiology;
-2; Differentiate between prokaryotic and eukaryotic organisms;
-3; Culture and isolate microorganisms using standard techniques;
-4; Identify selected microbial groups and describe their economic relevance;
-5; Describe the layout and operation of a microbiology laboratory;
-6; Identify equipment and reagents used in microbiological analyses;
-7; Explain the principles behind basic microbiological protocols;
-
-Weekly Course Outline:
-
-Week 1; Introduction and History of Microbiology; Origin and scope of microbiology; Contributions of early microbiologists; Branches and applications of microbiology; Practical – Laboratory orientation and safety rules;
-
-Week 2; Classification of Microorganisms; Major groups of microorganisms; Prokaryotes vs eukaryotes; Archaea vs eubacteria; Practical – Observation of bacteria, fungi, and protozoa slides;
-
-Week 3; Microbial Structure and Cytochemistry I; Anatomy and structure of bacteria; Cell wall, plasma membrane, flagella, pili, capsules, endospores; Practical – Microscopic examination of bacterial structures;
-
-Week 4; Microbial Structure and Cytochemistry II; Fungal morphology (yeasts and molds); Structure and characteristics of viruses; Practical – Observation of fungal and viral structures using slides and models;
-
-Week 5; Bacterial Shapes, Arrangements, and Colonial Morphology; Cocci, bacilli, spirilla; Colony characteristics and growth patterns; Practical – Demonstration of bacterial colony morphology;
-
-Week 6; Sterilization and Disinfection; Principles and methods – dry heat, moist heat, filtration, chemical agents; Aseptic techniques; Practical – Demonstration of sterilization methods (autoclaving, flaming, use of disinfectants);
-
-Week 7; Culture and Isolation of Microorganisms I; Culture media – types, preparation, and uses; Inoculation techniques; Practical – Preparation of nutrient agar and broth media;
-
-Week 8; Culture and Isolation of Microorganisms II; Isolation and identification of bacteria and fungi; Pure culture techniques; Practical – Streak plate and pour plate methods;
-
-Week 9; Microbial Nutrition and Biochemical Activities; Nutritional requirements; Types of metabolism and enzyme activities; Practical – Simple biochemical tests (catalase, oxidase, starch hydrolysis);
-
-Week 10; Antigens, Antibodies, and Serological Tests; Concepts of immunity, antigens, and antibodies; Principles of serological reactions; Practical – Demonstration of agglutination or precipitation tests;
-
-Week 11; Microbial Variation and Heredity; Genetic variation in microorganisms; Mutation, recombination, and gene transfer (transformation, conjugation, transduction); Practical – Observation of bacterial variation and colony differences;
-
-Week 12; Economic Importance of Microbes; Beneficial microbes in food, fermentation, medicine, agriculture; Harmful microbes causing diseases and spoilage; Practical – Display of microbial products and fermented foods;
-
-Week 13; Microbiology of Air, Food, and Milk; Common microorganisms in air, food, and dairy products; Contamination and spoilage processes; Practical – Sampling of air and food for microbial growth;
-
-Week 14; Microbiology of Water and Soil; Microbial roles in water and soil ecosystems; Water-borne diseases and soil fertility; Practical – Isolation of soil microorganisms; Water testing for coliforms;
-
-Week 15; Revision and Course Review; Review of key topics and practicals; Preparation for examination; Practical – Comprehensive revision and test;
-    """)
 
 # -----------------------------
 # STUDENT MODE
@@ -309,8 +260,7 @@ import streamlit as st
 import os
 import re
 
-st.set_page_config(page_title="MCB 221 Assignment Submission")
-st.title("MCB 221 – General Microbiology")
+st.title("MCB 221 – General Biochemistry")
 st.write("Submit your assignments for Week 1 and Week 2. Upload your files below.")
 
 # --- Student Info ---
@@ -399,6 +349,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
