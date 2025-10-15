@@ -157,7 +157,7 @@ def display_seminar_upload(name, matric):
 # Streamlit Layout
 # -----------------------------
 st.set_page_config(page_title="BCH 201 Portal", page_icon="🧬", layout="wide")
-st.title("📘 BCH 201 General Biochemistry Course Portal")
+st.title("📘 BIO 113 VIRUSES, BACTERIA AND LOWER PLANTS Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
@@ -246,7 +246,7 @@ import streamlit as st
 import os
 import re
 
-st.title("BCH 201 – General Biochemistry")
+st.title("BIO 113 VIRUSES, BACTERIA AND LOWER PLANTS")
 st.write("Submit your assignments for Week 1 and Week 2. Upload your files below.")
 
 # --- Student Info ---
@@ -335,6 +335,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
