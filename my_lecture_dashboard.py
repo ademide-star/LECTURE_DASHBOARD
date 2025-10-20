@@ -178,30 +178,43 @@ if mode=="Student":
         st.session_state["attended_week"] = week if marked else None
 
     if "attended_week" in st.session_state:
-        week = st.session_state["attended_week"]
-        st.success(f"Access granted for {week}")
-        lecture_info = lectures_df[lectures_df["Week"]==week].iloc[0]
-        st.subheader(f"📖 {week}: {lecture_info['Topic']}")
-        if lecture_info["Brief"].strip(): st.write(f"**Lecture Brief:** {lecture_info['Brief']}")
-        else: st.info("Lecture brief not yet available.")
+    week = st.session_state["attended_week"]
+    st.success(f"Access granted for {week}")
+    
+    lecture_rows = lectures_df[lectures_df["Week"] == week]
+    if not lecture_rows.empty:
+        lecture_info = lecture_rows.iloc[0]  # Series
+        
+        topic = lecture_info.get("Topic", "").strip()
+        brief = lecture_info.get("Brief", "").strip()
+        assignment = lecture_info.get("Assignment", "").strip()
+        classwork = lecture_info.get("Classwork", "").strip()
+        
+        st.subheader(f"📖 {week}: {topic or 'Topic not available'}")
+        st.write(f"**Lecture Brief:** {brief}") if brief else st.info("Lecture brief not yet available.")
 
-        if lecture_info["Assignment"].strip():
+        if assignment:
             st.subheader("📚 Assignment")
-            st.markdown(f"**Assignment:** {lecture_info['Assignment']}")
+            st.markdown(f"**Assignment:** {assignment}")
         else:
             st.info("Assignment not released yet.")
-
+        
         display_module_pdf(week)
 
         # Classwork
-        if lecture_info["Classwork"].strip():
+        if classwork:
             st.markdown("### 🧩 Classwork Questions")
-            questions = [q.strip() for q in lecture_info["Classwork"].split(";") if q.strip()]
+            questions = [q.strip() for q in classwork.split(";") if q.strip()]
             with st.form("cw_form"):
-                answers = [st.text_input(f"Q{i+1}: {q}") for i,q in enumerate(questions)]
+                answers = [st.text_input(f"Q{i+1}: {q}") for i, q in enumerate(questions)]
                 submit_cw = st.form_submit_button("Submit Answers", disabled=not is_classwork_open(week))
-                if submit_cw: save_classwork(name, matric, week, answers)
-        else: st.info("Classwork not yet released.")
+                if submit_cw:
+                    save_classwork(name, matric, week, answers)
+        else:
+            st.info("Classwork not yet released.")
+    else:
+        st.error(f"No lecture information found for {week}")
+
             
         
 import os
@@ -335,6 +348,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
