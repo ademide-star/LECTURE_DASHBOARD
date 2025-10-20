@@ -246,7 +246,7 @@ import streamlit as st
 import os
 import re
 
-st.title("BIO 113 VIRUSES, BACTERIA AND LOWER PLANTS")
+st.title("BIO 203")
 st.write("Submit your assignments for Week 1 and Week 2. Upload your files below.")
 
 # --- Student Info ---
@@ -335,6 +335,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
