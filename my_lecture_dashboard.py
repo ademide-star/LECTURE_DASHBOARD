@@ -171,6 +171,7 @@ if mode=="Student":
         name = st.text_input("Full Name")
         matric = st.text_input("Matric Number")
         week = st.selectbox("Select Lecture Week", lectures_df["Week"].tolist())
+        attendance_code = st.text_input("Attendance Code")  # 👈 Add this line
         submit_attendance = st.form_submit_button("Mark Attendance")
 
     if submit_attendance and name.strip() and matric.strip():
@@ -364,6 +365,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
