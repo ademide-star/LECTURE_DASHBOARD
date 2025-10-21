@@ -116,8 +116,8 @@ def open_classwork(week):
     if week in df["Week"].values:
         df.loc[df["Week"]==week, ["IsOpen","OpenTime"]] = [1, now]
     else:
-    df = pd.concat([df, pd.DataFrame([{"Week":week,"IsOpen":1,"OpenTime":now}])], ignore_index=True)
-    df.to_csv(CLASSWORK_STATUS_FILE, index=False)
+        df = pd.concat([df, pd.DataFrame([{"Week":week,"IsOpen":1,"OpenTime":now}])], ignore_index=True)
+        df.to_csv(CLASSWORK_STATUS_FILE, index=False)
 
 def close_classwork_after_20min():
     if not os.path.exists(CLASSWORK_STATUS_FILE):
@@ -363,6 +363,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
