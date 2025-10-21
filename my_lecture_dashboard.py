@@ -165,20 +165,19 @@ mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 # -----------------------------
 # STUDENT MODE
 # -----------------------------
-if mode=="Student":
+if mode == "Student":
     st.subheader("🎓 Student Login & Attendance")
+
+    # --- Attendance Form ---
     with st.form("attendance_form"):
         name = st.text_input("Full Name")
         matric = st.text_input("Matric Number")
         week = st.selectbox("Select Lecture Week", lectures_df["Week"].tolist())
-        attendance_code = st.text_input("Attendance Code")  # 👈 Add this line
-        course_code = st.selectbox("Select Course", ["BIO203", "BCH201", "MCB221", "BIO113", "BIO306"])  # 👈 add this
+        attendance_code = st.text_input("Attendance Code")
+        course_code = st.selectbox("Select Course", ["BIO203", "BCH201", "MCB221", "BIO113", "BIO306"])
         submit_attendance = st.form_submit_button("Mark Attendance")
 
-    if submit_attendance and name.strip() and matric.strip():
-        marked = mark_attendance(name, matric, week)
-        st.session_state["attended_week"] = week if marked else None
-
+    # --- Attendance Handling ---
     if submit_attendance:
         if not name.strip() or not matric.strip():
             st.warning("Please enter your full name and matric number.")
@@ -187,53 +186,64 @@ if mode=="Student":
         else:
             COURSE_CODE = {
                 "BIO203": {"valid_code": "BIO203-ZT7", "start": "13:00", "end": "22:00"},
-                "BCH201": {"valid_code": "BCH201-ZT8", "start": "14:00", "end": "14:50"},
+                "BCH201": {"valid_code": "BCH201-ZT8", "start": "14:00", "end": "15:30"},
                 "MCB221": {"valid_code": "MCB221-ZT9", "start": "10:00", "end": "22:20"},
                 "BIO113": {"valid_code": "BIO113-ZT1", "start": "09:00", "end": "22:00"},
                 "BIO306": {"valid_code": "BIO306-ZT2", "start": "14:00", "end": "22:00"},
-        }
+            }
 
             if course_code not in COURSE_CODE:
-                st.error(f"⚠️ Invalid code {course_code}.")
+                st.error(f"⚠️ Invalid course code: {course_code}.")
             else:
                 valid_code = COURSE_CODE[course_code]["valid_code"]
 
-    
-        lecture_rows = lectures_df[lectures_df["Week"] == week]
-        if not lecture_rows.empty:
-            lecture_info = lecture_rows.iloc[0]  # Series
-        
-            topic = lecture_info.get("Topic", "").strip()
-            brief = lecture_info.get("Brief", "").strip()
-            assignment = lecture_info.get("Assignment", "").strip()
-            classwork = lecture_info.get("Classwork", "").strip()
-        
-            st.subheader(f"📖 {week}: {topic or 'Topic not available'}")
-            st.write(f"**Lecture Brief:** {brief}") if brief else st.info("Lecture brief not yet available.")
+                if attendance_code == valid_code:
+                    marked = mark_attendance(name, matric, week)
+                    st.session_state["attended_week"] = week if marked else None
+                    st.success(f"✅ Attendance marked for {name} ({matric}) in {course_code} ({week}).")
+                else:
+                    st.error("❌ Incorrect attendance code. Please try again.")
 
-            if assignment:
-                st.subheader("📚 Assignment")
-                st.markdown(f"**Assignment:** {assignment}")
-            else:
-                st.info("Assignment not released yet.")
-        
-            display_module_pdf(week)
+    # --- Lecture Information Display ---
+    lecture_rows = lectures_df[lectures_df["Week"] == week]
+    if not lecture_rows.empty:
+        lecture_info = lecture_rows.iloc[0]  # Series
 
-        # Classwork
-            if classwork:
-                st.markdown("### 🧩 Classwork Questions")
-                questions = [q.strip() for q in classwork.split(";") if q.strip()]
-                with st.form("cw_form"):
-                    answers = [st.text_input(f"Q{i+1}: {q}") for i, q in enumerate(questions)]
-                    submit_cw = st.form_submit_button("Submit Answers", disabled=not is_classwork_open(week))
-                    if submit_cw:
-                        save_classwork(name, matric, week, answers)
-            else:
-                st.info("Classwork not yet released.")
+        topic = lecture_info.get("Topic", "").strip()
+        brief = lecture_info.get("Brief", "").strip()
+        assignment = lecture_info.get("Assignment", "").strip()
+        classwork = lecture_info.get("Classwork", "").strip()
+
+        st.subheader(f"📖 {week}: {topic or 'Topic not available'}")
+        st.write(f"**Lecture Brief:** {brief}") if brief else st.info("Lecture brief not yet available.")
+
+        # --- Assignment ---
+        if assignment:
+            st.subheader("📚 Assignment")
+            st.markdown(f"**Assignment:** {assignment}")
         else:
-            st.error(f"No lecture information found for {week}")
+            st.info("Assignment not released yet.")
 
-            
+        # --- Display Lecture PDF ---
+        display_module_pdf(week)
+
+        # --- Classwork Section ---
+        if classwork:
+            st.markdown("### 🧩 Classwork Questions")
+            questions = [q.strip() for q in classwork.split(";") if q.strip()]
+
+            with st.form("cw_form"):
+                answers = [st.text_input(f"Q{i+1}: {q}") for i, q in enumerate(questions)]
+                submit_cw = st.form_submit_button("Submit Answers", disabled=not is_classwork_open(week))
+
+                if submit_cw:
+                    save_classwork(name, matric, week, answers)
+                    st.success("✅ Your classwork answers have been submitted successfully!")
+        else:
+            st.info("Classwork not yet released.")
+    else:
+        st.error(f"No lecture information found for {week}")
+
         
 import os
 import streamlit as st
@@ -366,6 +376,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
