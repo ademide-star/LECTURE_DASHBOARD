@@ -99,38 +99,83 @@ def save_seminar(name, matric, file):
     return True
 
 # -----------------------------
-# Classwork status helpers
+# ✅ CLASSWORK STATUS HELPERS (Stable Version)
 # -----------------------------
+import os
+import pandas as pd
+from datetime import datetime
+
+CLASSWORK_STATUS_FILE = "classwork_status.csv"  # ensure consistent global path
+
+
 def is_classwork_open(week):
+    """Check if classwork for a specific week is open."""
     if not os.path.exists(CLASSWORK_STATUS_FILE):
         return False
+    
     df = pd.read_csv(CLASSWORK_STATUS_FILE)
+    if df.empty or "Week" not in df.columns or "IsOpen" not in df.columns:
+        return False
+    
+    # Normalize text for consistent matching
+    df["Week"] = df["Week"].astype(str).str.strip().str.lower()
+    week = str(week).strip().lower()
+    
     if week not in df["Week"].values:
         return False
+    
     row = df[df["Week"] == week].iloc[0]
-    return row["IsOpen"] == 1
+    
+    try:
+        return int(row["IsOpen"]) == 1
+    except Exception:
+        return str(row["IsOpen"]).strip() == "1"
+
 
 def open_classwork(week):
+    """Open classwork for a specific week and record the open time."""
     now = datetime.now()
-    df = pd.read_csv(CLASSWORK_STATUS_FILE) if os.path.exists(CLASSWORK_STATUS_FILE) else pd.DataFrame(columns=["Week","IsOpen","OpenTime"])
-    if week in df["Week"].values:
-        df.loc[df["Week"]==week, ["IsOpen","OpenTime"]] = [1, now]
+    week = str(week).strip()
+    
+    if os.path.exists(CLASSWORK_STATUS_FILE):
+        df = pd.read_csv(CLASSWORK_STATUS_FILE)
     else:
-        df = pd.concat([df, pd.DataFrame([{"Week":week,"IsOpen":1,"OpenTime":now}])], ignore_index=True)
-        df.to_csv(CLASSWORK_STATUS_FILE, index=False)
+        df = pd.DataFrame(columns=["Week", "IsOpen", "OpenTime"])
+    
+    if week in df["Week"].astype(str).tolist():
+        df.loc[df["Week"] == week, ["IsOpen", "OpenTime"]] = [1, now]
+    else:
+        df = pd.concat(
+            [df, pd.DataFrame([{"Week": week, "IsOpen": 1, "OpenTime": now}])],
+            ignore_index=True
+        )
+    
+    df.to_csv(CLASSWORK_STATUS_FILE, index=False)
+
 
 def close_classwork_after_20min():
+    """Automatically close classwork 20 minutes after opening."""
     if not os.path.exists(CLASSWORK_STATUS_FILE):
         return
+    
     df = pd.read_csv(CLASSWORK_STATUS_FILE)
     now = datetime.now()
+    
+    if df.empty:
+        return
+    
     for idx, row in df.iterrows():
-        if row["IsOpen"]==1 and pd.notnull(row["OpenTime"]):
-            open_time = pd.to_datetime(row["OpenTime"])
-            if (now - open_time).total_seconds() > 20*60:
-                df.at[idx,"IsOpen"]=0
-                df.at[idx,"OpenTime"]=None
-    df.to_csv(CLASSWORK_STATUS_FILE,index=False)
+        try:
+            if int(row["IsOpen"]) == 1 and pd.notnull(row["OpenTime"]):
+                open_time = pd.to_datetime(row["OpenTime"], errors="coerce")
+                if open_time is not pd.NaT and (now - open_time).total_seconds() > 20 * 60:
+                    df.at[idx, "IsOpen"] = 0
+                    df.at[idx, "OpenTime"] = None
+        except Exception as e:
+            print(f"⚠️ Error in close_classwork_after_20min: {e}")
+            continue
+    
+    df.to_csv(CLASSWORK_STATUS_FILE, index=False)
 
 # -----------------------------
 # PDF and seminar helpers
@@ -376,6 +421,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
