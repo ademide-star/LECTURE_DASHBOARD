@@ -156,8 +156,8 @@ def display_seminar_upload(name, matric):
 # -----------------------------
 # Streamlit Layout
 # -----------------------------
-st.set_page_config(page_title="BIO 203 Portal", page_icon="🧬", layout="wide")
-st.title("📘 BIO 203 GENERAL PHYSIOLOGY Course Portal")
+st.set_page_config(page_title="BCH 201 Portal", page_icon="🧬", layout="wide")
+st.title("📘 BCH 201 GENERAL BIOCHEMISTRY Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
@@ -177,9 +177,24 @@ if mode=="Student":
         marked = mark_attendance(name, matric, week)
         st.session_state["attended_week"] = week if marked else None
 
-    if "attended_week" in st.session_state:
-        week = st.session_state["attended_week"]
-        st.success(f"Access granted for {week}")
+    if submit_attendance:
+            if not name.strip() or not matric.strip():
+                st.warning("Please enter your full name and matric number.")
+            elif not attendance_code.strip():
+                st.warning("Please enter the attendance code for today.")
+            else:
+                COURSE_CODE = {
+                    "BIO203": {"valid_code": "BIO203-ZT7", "start": "13:00", "end": "22:00"},
+                    "BCH201": {"valid_code": "BCH201-ZT8", "start": "14:00", "end": "13:20"},
+                    "MCB221": {"valid_code": "MCB221-ZT9", "start": "10:00", "end": "22:20"},
+                    "BIO113": {"valid_code": "BIO113-ZT1", "start": "09:00", "end": "22:00"},
+                    "BIO306": {"valid_code": "BIO306-ZT2", "start": "14:00", "end": "22:00"},
+                }
+
+                if course_code not in COURSE_CODE:
+                    st.error(f"⚠️ Valide code {course_code}.")
+                else:
+                    valid_code = COURSE_TIMINGS[course_code]["valid_code"]
     
         lecture_rows = lectures_df[lectures_df["Week"] == week]
         if not lecture_rows.empty:
@@ -259,7 +274,7 @@ import streamlit as st
 import os
 import re
 
-st.title("BIO 203")
+st.title("BCH 201")
 st.write("Submit your assignments for Week 1 and Week 2. Upload your files below.")
 
 # --- Student Info ---
@@ -348,6 +363,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
