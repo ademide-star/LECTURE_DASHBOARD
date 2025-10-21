@@ -186,7 +186,7 @@ if mode=="Student":
         else:
             COURSE_CODE = {
                 "BIO203": {"valid_code": "BIO203-ZT7", "start": "13:00", "end": "22:00"},
-                "BCH201": {"valid_code": "BCH201-ZT8", "start": "14:00", "end": "14:47"},
+                "BCH201": {"valid_code": "BCH201-ZT8", "start": "14:00", "end": "14:50"},
                 "MCB221": {"valid_code": "MCB221-ZT9", "start": "10:00", "end": "22:20"},
                 "BIO113": {"valid_code": "BIO113-ZT1", "start": "09:00", "end": "22:00"},
                 "BIO306": {"valid_code": "BIO306-ZT2", "start": "14:00", "end": "22:00"},
@@ -365,6 +365,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
