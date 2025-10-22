@@ -202,7 +202,7 @@ def display_seminar_upload(name, matric):
 # Streamlit Layout
 # -----------------------------
 st.set_page_config(page_title="BCH 201 Portal", page_icon="🧬", layout="wide")
-st.title("📘 BCH 201 GENERAL BIOCHEMISTRY Course Portal")
+st.title("📘 BIO 113 VIRUS ,BACTERIA AND LOWER PLANTS Course Portal")
 st.subheader("Department of Biological Sciences Sikiru Adetona College of Education Omu-Ijebu")
 mode = st.radio("Select Mode:", ["Student", "Teacher/Admin"])
 
@@ -233,7 +233,7 @@ if mode == "Student":
                 "BIO203": {"valid_code": "BIO203-ZT7", "start": "13:00", "end": "22:00"},
                 "BCH201": {"valid_code": "BCH201-ZT8", "start": "14:00", "end": "15:30"},
                 "MCB221": {"valid_code": "MCB221-ZT9", "start": "10:00", "end": "22:20"},
-                "BIO113": {"valid_code": "BIO113-ZT1", "start": "09:00", "end": "22:00"},
+                "BIO113": {"valid_code": "BIO113-ZT1", "start": "09:00", "end": "09:30"},
                 "BIO306": {"valid_code": "BIO306-ZT2", "start": "14:00", "end": "22:00"},
             }
 
@@ -332,7 +332,7 @@ import streamlit as st
 import os
 import re
 
-st.title("BCH 201")
+st.title("BIO 113")
 st.write("Submit your assignments for Week 1 and Week 2. Upload your files below.")
 
 # --- Student Info ---
@@ -421,6 +421,7 @@ if mode=="Teacher/Admin":
             else: st.info(f"No {label.lower()} yet.")
     else:
         if password: st.error("❌ Incorrect password. Try again.")
+
 
 
 
