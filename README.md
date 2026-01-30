@@ -1,12 +1,11 @@
-# LECTURE_DASHBOARD 
-*A Streamlit-based Course Management & Attendance System*
+# LMS_TEST_DASHBOARD 
+*A Streamlit-based test and exam dashboard*
 
 ---
 
 ## 🌟 Overview
 
-The Lecture Dashboard** is an interactive Streamlit web app designed for managing lectures, marking attendance, submitting classwork, and uploading assignments or seminar presentations.  
-It helps streamline teaching and student engagement for the course.
+its a basically a platform to test students perfomance 
 
 ---
 
